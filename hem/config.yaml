@@ -1,0 +1,12 @@
+tests:
+  homepage:
+    path: /index.html
+    secure: true
+    hosts: 
+       - rickymoorhouse.uk
+       - rickymoorhouse.co.uk
+  api:
+    path: /api-connect-ops/live/public/echo?text=/255/255/0
+    secure: true
+    verify: false
+    src: dns:branding.api.eu.apiconnect.ibmcloud.com
