@@ -118,13 +118,13 @@ def summarise_results(results):
     print success_count
 
 def discover_hosts(src):
-    (discovery_type,parms) = src.split(':')
+    discovery_type = src['type']
     try:
-        hosts = list()
+        host_list = list()
         with PikeManager(['drivers']) as mgr:
             discovery = pike.discovery.py.get_module_by_name('discovery_' + discovery_type)
-            hosts = discovery.hosts(parms)
-            return hosts
+            host_list = discovery.hosts(**src)
+            return host_list
     except ImportError:
         print "Discovery method {} not found".format(discovery_type)
         return []
@@ -133,13 +133,18 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR)
     with open('config.yaml') as config_file:
         config = yaml.load(config_file)
-
+    if 'discovery' in config:
+        DEFAULT_DISCOVERY = config['discovery']
+    else:
+        DEFAULT_DISCOVERY = {}
     for test_name in config['tests']:
         test = config['tests'][test_name]
         if 'hosts' in test:
             hosts = test['hosts']
-        elif 'src' in test:
-            hosts = discover_hosts(test['src'])
+        elif 'discovery' in test:
+            discovery = DEFAULT_DISCOVERY.copy()
+            discovery.update(test['discovery']) # Python 3.5 move to context = {**defaults, **user}
+            hosts = discover_hosts(discovery)
         else:
             hosts = ["api.eu.apiconnect.ibmcloud.com", "rickymoorhouse.uk"]
         click.echo("Testing {0} across {1} hosts".format(test_name, len(hosts)))

@@ -1,3 +1,5 @@
+discovery:
+  type: dns
 tests:
   homepage:
     path: /index.html
@@ -9,4 +11,6 @@ tests:
     path: /api-connect-ops/live/public/echo?text=/255/255/0
     secure: true
     verify: false
-    src: dns:branding.api.eu.apiconnect.ibmcloud.com
+    discovery: 
+#      type: dns
+      name: branding.api.eu.apiconnect.ibmcloud.com
