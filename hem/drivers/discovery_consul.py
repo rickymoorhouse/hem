@@ -9,7 +9,7 @@ def hosts(**kwargs):
     catalog = requests.get("http://{}:8500/v1/catalog/service/{}".format(consul_server, service)).json()
     results = []
     for node in catalog:
-        results.append(node["Address"])
+        results.append("{}:{}".format(node['Address'], node['ServicePort']))
     return results
 
 if __name__ == "__main__":
