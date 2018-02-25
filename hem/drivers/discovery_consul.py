@@ -5,7 +5,7 @@ def hosts(**kwargs):
     """ return hosts from consul api """
     
     consul_server = kwargs.get("server","127.0.0.1")
-    service = kwargs.get("service","consul")
+    service = kwargs.get("name","consul")
     catalog = requests.get("http://{}:8500/v1/catalog/service/{}".format(consul_server, service)).json()
     results = []
     for node in catalog:
@@ -13,4 +13,4 @@ def hosts(**kwargs):
     return results
 
 if __name__ == "__main__":
-    print hosts(server="192.168.0.18", service="redis")
+    print hosts(server="192.168.0.18", name="desklight")

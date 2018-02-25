@@ -1,5 +1,7 @@
 discovery:
   type: dns
+metrics:
+  type: console
 tests:
   homepage:
     path: /index.html
@@ -14,3 +16,11 @@ tests:
     discovery: 
 #      type: dns
       name: branding.api.eu.apiconnect.ibmcloud.com
+#  led:
+#    path: /rgb/255/255/0
+#    secure: false
+#    verify: false
+#    discovery: 
+#      type: consul
+#      server: 192.168.0.18
+#      name: desklight

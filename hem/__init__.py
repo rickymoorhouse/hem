@@ -56,44 +56,61 @@ class Check(object):
     """ A check and it's testing  """
     url = ""
     method = "get"
+    name = ""
     timeout = 10
+    metrics = None
 
-    def __init__(self, path, secure=False, verify=True):
+    def __init__(self, name, path, secure=False, verify=True, metrics=None):
         self.logger = logging.getLogger(__name__)
+        self.name = name
         self.verify = verify
         if secure:
             self.url = "https://{}" + path
         else:
             self.url = "http://{}" + path
+        self.metrics = metrics
 
     def test(self, param):
         """
         The core testing -
         takes in the parameter to test the check with and returns status and time
         """
+        time = timedelta(seconds=0)
+
         try:
             http_call=getattr(requests,self.method) 
             result = http_call(self.url.format(param), timeout=self.timeout, verify=self.verify)
             self.logger.debug("Response text: %s", result.text)
+            time = result.elapsed
             result.raise_for_status()
-            return (result.status_code, result.elapsed)
+            status = result.status_code
         except requests.exceptions.HTTPError as he:
             self.logger.debug(he)
             self.report_failure(param, he.message)
-            return (result.status_code, result.elapsed)
+            time = result.elapsed
+            status = result.status_code
         except requests.exceptions.SSLError as ssl_error:
             self.logger.debug(ssl_error)
             self.report_failure(param, ssl_error.message)
-            return (000, timedelta(seconds=0))
+            status = 000
         except requests.exceptions.ConnectTimeout as timeout:
             self.logger.debug(timeout)
             self.report_failure(param, timeout.message)
-            return (000, timedelta(seconds=self.timeout))
+            status = 000
+            time = timedelta(seconds=self.timeout)
         except requests.exceptions.ConnectionError as connection:
             self.logger.debug(connection)
             self.report_failure(param, connection.message)
-            return (000, timedelta(seconds=0))
-
+            status = 0000
+        metrics.store(
+            "{}.{}.result".format(self.name, param.replace('.', '_')),
+            status
+            )
+        metrics.store(
+            "{}.{}.time".format(self.name, param.replace('.', '_')),
+            time.total_seconds()
+            )
+        return (status, time)
 
     def test_list(self, param_list):
         """ Run test over a list of parameters """
@@ -114,7 +131,6 @@ def summarise_results(results):
     for result in results:
         if result[0] == 200:
             success_count += 1
-
     print success_count
 
 def discover_hosts(src):
@@ -137,6 +153,11 @@ if __name__ == '__main__':
         DEFAULT_DISCOVERY = config['discovery']
     else:
         DEFAULT_DISCOVERY = {}
+
+    with PikeManager(['drivers']) as mgr:
+        metrics = pike.discovery.py.get_module_by_name('metrics_' + config['metrics']['type'])
+
+    
     for test_name in config['tests']:
         test = config['tests'][test_name]
         if 'hosts' in test:
@@ -149,6 +170,11 @@ if __name__ == '__main__':
             hosts = ["api.eu.apiconnect.ibmcloud.com", "rickymoorhouse.uk"]
         click.echo("Testing {0} across {1} hosts".format(test_name, len(hosts)))
         logging.debug("{} - {}".format(test,test.get('url')))
-        CHECK = Check(test.get('path'), test.get('secure',False), test.get('verify',True))
+        CHECK = Check(
+            test_name,
+            test.get('path'), 
+            test.get('secure',False), 
+            test.get('verify',True), 
+            metrics)
         results = CHECK.test_list(hosts)
         summarise_results(results)
