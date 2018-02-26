@@ -102,11 +102,11 @@ class Check(object):
             self.logger.debug(connection)
             self.report_failure(param, connection.message)
             status = 0000
-        metrics.store(
+        self.metrics.store(
             "{}.{}.result".format(self.name, param.replace('.', '_')),
             status
             )
-        metrics.store(
+        self.metrics.store(
             "{}.{}.time".format(self.name, param.replace('.', '_')),
             time.total_seconds()
             )
@@ -145,36 +145,43 @@ def discover_hosts(src):
         print "Discovery method {} not found".format(discovery_type)
         return []
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.ERROR)
-    with open('config.yaml') as config_file:
-        config = yaml.load(config_file)
-    if 'discovery' in config:
-        DEFAULT_DISCOVERY = config['discovery']
-    else:
-        DEFAULT_DISCOVERY = {}
-
-    with PikeManager(['drivers']) as mgr:
-        metrics = pike.discovery.py.get_module_by_name('metrics_' + config['metrics']['type'])
-
-    
-    for test_name in config['tests']:
-        test = config['tests'][test_name]
-        if 'hosts' in test:
-            hosts = test['hosts']
-        elif 'discovery' in test:
-            discovery = DEFAULT_DISCOVERY.copy()
-            discovery.update(test['discovery']) # Python 3.5 move to context = {**defaults, **user}
-            hosts = discover_hosts(discovery)
+@click.command()
+@click.option('--count', default=1)
+def runApp(**kwargs):
+    for x in range(kwargs['count']):
+        logging.basicConfig(level=logging.ERROR)
+        with open('config.yaml') as config_file:
+            config = yaml.load(config_file)
+        if 'discovery' in config:
+            DEFAULT_DISCOVERY = config['discovery']
         else:
-            hosts = ["api.eu.apiconnect.ibmcloud.com", "rickymoorhouse.uk"]
-        click.echo("Testing {0} across {1} hosts".format(test_name, len(hosts)))
-        logging.debug("{} - {}".format(test,test.get('url')))
-        CHECK = Check(
-            test_name,
-            test.get('path'), 
-            test.get('secure',False), 
-            test.get('verify',True), 
-            metrics)
-        results = CHECK.test_list(hosts)
-        summarise_results(results)
+            DEFAULT_DISCOVERY = {}
+
+        with PikeManager(['drivers']) as mgr:
+            metrics_driver = pike.discovery.py.get_module_by_name('metrics_' + config['metrics']['type'])
+        metrics = metrics_driver.instance(config['metrics'])
+        
+        
+        for test_name in config['tests']:
+            test = config['tests'][test_name]
+            if 'hosts' in test:
+                hosts = test['hosts']
+            elif 'discovery' in test:
+                discovery = DEFAULT_DISCOVERY.copy()
+                discovery.update(test['discovery']) # Python 3.5 move to context = {**defaults, **user}
+                hosts = discover_hosts(discovery)
+            else:
+                hosts = ["api.eu.apiconnect.ibmcloud.com", "rickymoorhouse.uk"]
+            click.echo("Testing {0} across {1} hosts".format(test_name, len(hosts)))
+            logging.debug("{} - {}".format(test,test.get('url')))
+            CHECK = Check(
+                test_name,
+                test.get('path'), 
+                test.get('secure',False), 
+                test.get('verify',True), 
+                metrics)
+            results = CHECK.test_list(hosts)
+            summarise_results(results)
+
+if __name__ == '__main__':
+    runApp()
