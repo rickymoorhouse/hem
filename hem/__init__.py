@@ -10,6 +10,8 @@ import yaml
 import six
 import pike.discovery
 from pike.manager import PikeManager
+import threading
+
 
 logging.captureWarnings(True)
 
@@ -70,7 +72,7 @@ class Check(object):
             self.url = "http://{}" + path
         self.metrics = metrics
 
-    def test(self, param):
+    def test(self, param, results):
         """
         The core testing -
         takes in the parameter to test the check with and returns status and time
@@ -110,13 +112,19 @@ class Check(object):
             "{}.{}.time".format(self.name, param.replace('.', '_')),
             time.total_seconds()
             )
-        return (status, time)
+        results.append((status, time))
 
     def test_list(self, param_list):
         """ Run test over a list of parameters """
         results = []
+        threads = []
+        # Start a thread for each parameter
         for param in param_list:
-            results.append(self.test(param))
+            t = threading.Thread(target=self.test, args=(param, results))
+            threads.append(t)
+            t.start()
+        for i in range(len(threads)):
+            threads[i].join()
         self.logger.info(results)
         return results
 
@@ -131,7 +139,7 @@ def summarise_results(results):
     for result in results:
         if result[0] == 200:
             success_count += 1
-    print success_count
+    click.echo("Resulted in {} successful calls".format(success_count))
 
 def discover_hosts(src):
     discovery_type = src['type']
