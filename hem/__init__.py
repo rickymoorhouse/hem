@@ -8,6 +8,7 @@ import requests
 import click
 import yaml
 import six
+import time
 import pike.discovery
 from pike.manager import PikeManager
 import threading
@@ -157,6 +158,7 @@ def discover_hosts(src):
 @click.option('--count', default=1)
 def runApp(**kwargs):
     for x in range(kwargs['count']):
+        start = time.time()
         logging.basicConfig(level=logging.ERROR)
         with open('config.yaml') as config_file:
             config = yaml.load(config_file)
@@ -190,6 +192,11 @@ def runApp(**kwargs):
                 metrics)
             results = CHECK.test_list(hosts)
             summarise_results(results)
+            end = time.time()
+            try:
+                time.sleep(int(10 - (end - start)))
+            except IOError:
+                logger.log("Too quick!")
 
 if __name__ == '__main__':
     runApp()
