@@ -194,9 +194,9 @@ def runApp(**kwargs):
             summarise_results(results)
             end = time.time()
             try:
-                time.sleep(int(10 - (end - start)))
+                time.sleep(int(30 - (end - start)))
             except IOError:
-                logger.log("Too quick!")
+                logging.info("Too quick!")
 
 if __name__ == '__main__':
     runApp()
