@@ -2,3 +2,5 @@
 venv/
 helpers/consul
 helpers/data
+dist/
+hem.egg-info/
