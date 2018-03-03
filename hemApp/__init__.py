@@ -35,9 +35,26 @@ def setup_logging(
     else:
         logging.basicConfig(level=default_level)
 
+def load_config(
+        default_path='config.yaml',
+        env_key='CONFIG_FILE'
+    ):
+    """
+    Load configuration
+    """
+    path = default_path
+    value = os.getenv(env_key, None)
+    if value:
+        path = value
+    if os.path.exists(path):
+        with open(path, 'rt') as config_file:
+            return yaml.safe_load(config_file.read())
+    else:
+        return {}
+
 @six.add_metaclass(abc.ABCMeta)
-class StoreBase(object):
-    """Base class for storing of check data
+class Metrics(object):
+    """Base class for storing of metrics data
     """
     @abc.abstractmethod
     def __init__(self):
@@ -105,11 +122,11 @@ class Check(object):
             self.logger.debug(connection)
             self.report_failure(param, connection.message)
             status = 0000
-        self.metrics.store(
+        self.metrics.stage(
             "{}.{}.result".format(self.name, param.replace('.', '_')),
             status
             )
-        self.metrics.store(
+        self.metrics.stage(
             "{}.{}.time".format(self.name, param.replace('.', '_')),
             time.total_seconds()
             )
@@ -134,19 +151,11 @@ class Check(object):
         click.echo(click.style("{} Failed with {}".format(param, message),fg='red'))
 
 
-def summarise_results(results):
-    #[(200, datetime.timedelta(0, 0, 138273)), (200, datetime.timedelta(0, 0, 142190))]
-    success_count = 0
-    for result in results:
-        if result[0] == 200:
-            success_count += 1
-    click.echo("Resulted in {} successful calls".format(success_count))
-
 def discover_hosts(src):
     discovery_type = src['type']
     try:
         host_list = list()
-        with PikeManager(['drivers', '/Users/rickymoorhouse/Documents/code/hem/hem/drivers']) as mgr:
+        with PikeManager(['drivers', '/Users/rickymoorhouse/Documents/code/hem/hem/drivers']):
             discovery = pike.discovery.py.get_module_by_name('discovery_' + discovery_type)
             host_list = discovery.hosts(**src)
             return host_list
@@ -155,13 +164,21 @@ def discover_hosts(src):
         return []
 
 @click.command()
-@click.option('--count', default=1)
+@click.option('--count', default=None)
+@click.option('-v', '--verbose', count=True)
 def runApp(**kwargs):
-    for x in range(kwargs['count']):
+    if kwargs['verbose'] > 1:
+        setup_logging(default_level=logging.DEBUG)
+    elif kwargs['verbose'] > 0:
+        setup_logging(default_level=logging.INFO)
+    else:
+        setup_logging(default_level=logging.ERROR)
+        
+    config = load_config()
+    iteration = 0
+    while not kwargs['count'] or iteration < kwargs['count']:
         start = time.time()
-        logging.basicConfig(level=logging.ERROR)
-        with open('config.yaml') as config_file:
-            config = yaml.load(config_file)
+
         if 'discovery' in config:
             DEFAULT_DISCOVERY = config['discovery']
         else:
@@ -192,12 +209,15 @@ def runApp(**kwargs):
                 test.get('verify',True), 
                 metrics)
             results = CHECK.test_list(hosts)
-            summarise_results(results)
+            logging.debug(results)
             end = time.time()
-            try:
-                time.sleep(int(30 - (end - start)))
-            except IOError:
-                logging.info("Too quick!")
+        iteration += 1
+        logging.info("Iteration {}".format(iteration))
+        metrics.store()
+        try:
+            time.sleep(int(30 - (end - start)))
+        except IOError:
+            logging.info("Too quick!")
 
 if __name__ == '__main__':
     runApp()

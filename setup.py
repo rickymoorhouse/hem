@@ -17,11 +17,16 @@ setup(
     license = "MIT",
     keywords = "monitor, http",
     #url = "http://packages.python.org/an_example_pypi_project",
-    packages=['hem', 'tests'],
+    packages=['hemApp', 'tests'],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
         "License :: OSI Approved :: MIT License",
     ],
+    entry_points={
+        'console_scripts': [
+            'hem=hem:runApp',
+        ],
+    },    
 )
