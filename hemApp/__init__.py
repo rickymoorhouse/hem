@@ -50,7 +50,7 @@ def load_config(
         with open(path, 'rt') as config_file:
             return yaml.safe_load(config_file.read())
     else:
-        return {}
+        return {"metrics":{"type":"console"}}
 
 @six.add_metaclass(abc.ABCMeta)
 class Metrics(object):
@@ -155,16 +155,16 @@ def discover_hosts(src):
     discovery_type = src['type']
     try:
         host_list = list()
-        with PikeManager(['drivers', '/Users/rickymoorhouse/Documents/code/hem/hem/drivers']):
+        with PikeManager(['.', 'drivers', '/Users/rickymoorhouse/Documents/code/hem/hemApp/drivers']):
             discovery = pike.discovery.py.get_module_by_name('discovery_' + discovery_type)
             host_list = discovery.hosts(**src)
             return host_list
-    except ImportError:
+    except ImportError as e:
+        logging.exception(e)
         click.echo("Discovery method {} not found".format(discovery_type))
         return []
 
 @click.command()
-@click.option('--count', default=None)
 @click.option('-v', '--verbose', count=True)
 def runApp(**kwargs):
     if kwargs['verbose'] > 1:
@@ -175,9 +175,11 @@ def runApp(**kwargs):
         setup_logging(default_level=logging.ERROR)
         
     config = load_config()
-    iteration = 0
-    while not kwargs['count'] or iteration < kwargs['count']:
+    logging.info(config)
+    iteration = 1
+    while True:
         start = time.time()
+        logging.info("Iteration {} at {}".format(iteration, start))
 
         if 'discovery' in config:
             DEFAULT_DISCOVERY = config['discovery']
@@ -212,7 +214,6 @@ def runApp(**kwargs):
             logging.debug(results)
             end = time.time()
         iteration += 1
-        logging.info("Iteration {}".format(iteration))
         metrics.store()
         try:
             time.sleep(int(30 - (end - start)))

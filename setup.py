@@ -9,11 +9,12 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "hem-app",
+    name = "hemApp",
     version = "0.1",
     author = "Ricky Moorhouse",
     author_email = "hem@rickymoorhouse.uk",
     description = ("HTTP Endpoint Monitor - keeping the loose ends tied up"),
+    install_requires = ['PyYaml', 'pike', 'click', 'requests', 'dnspython'],
     license = "MIT",
     keywords = "monitor, http",
     #url = "http://packages.python.org/an_example_pypi_project",
