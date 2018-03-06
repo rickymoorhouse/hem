@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -18,7 +18,7 @@ setup(
     license = "MIT",
     keywords = "monitor, http",
     #url = "http://packages.python.org/an_example_pypi_project",
-    packages=['hemApp', 'tests'],
+    packages=find_packages(),
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -27,7 +27,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'hem=hem:runApp',
+            'hem=hemApp:runApp',
         ],
     },    
 )

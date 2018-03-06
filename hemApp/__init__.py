@@ -35,22 +35,21 @@ def setup_logging(
     else:
         logging.basicConfig(level=default_level)
 
-def load_config(
-        default_path='config.yaml',
-        env_key='CONFIG_FILE'
-    ):
+def load_config():
     """
     Load configuration
     """
-    path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as config_file:
-            return yaml.safe_load(config_file.read())
-    else:
-        return {"metrics":{"type":"console"}}
+    path = '/etc/hem.yaml'
+    path_list = ['/etc/hem.yaml', 'hem.yaml']
+    env_path = os.getenv('HEM_CONFIG', None)
+    if env_path:
+        path_list.insert(0, env_path)
+    for path in path_list:
+        if os.path.exists(path):
+            with open(path, 'rt') as config_file:
+                return yaml.safe_load(config_file.read())
+    click.echo("No config found in "+', '.join(path_list))
+    exit(2)
 
 @six.add_metaclass(abc.ABCMeta)
 class Metrics(object):
@@ -155,8 +154,8 @@ def discover_hosts(src):
     discovery_type = src['type']
     try:
         host_list = list()
-        with PikeManager(['.', 'drivers', '/Users/rickymoorhouse/Documents/code/hem/hemApp/drivers']):
-            discovery = pike.discovery.py.get_module_by_name('discovery_' + discovery_type)
+        with PikeManager(['.', 'drivers']):
+            discovery = pike.discovery.py.get_module_by_name('hemApp.drivers.discovery_' + discovery_type)
             host_list = discovery.hosts(**src)
             return host_list
     except ImportError as e:
@@ -186,8 +185,8 @@ def runApp(**kwargs):
         else:
             DEFAULT_DISCOVERY = {}
 
-        with PikeManager(['drivers']) as mgr:
-            metrics_driver = pike.discovery.py.get_module_by_name('metrics_' + config['metrics']['type'])
+        with PikeManager(['.', 'drivers']) as mgr:
+            metrics_driver = pike.discovery.py.get_module_by_name('hemApp.drivers.metrics_' + config['metrics']['type'])
         metrics = metrics_driver.instance(config['metrics'])
         
         
@@ -212,7 +211,7 @@ def runApp(**kwargs):
                 metrics)
             results = CHECK.test_list(hosts)
             logging.debug(results)
-            end = time.time()
+        end = time.time()
         iteration += 1
         metrics.store()
         try:
