@@ -18,16 +18,12 @@ logging.captureWarnings(True)
 
 def setup_logging(
         default_path='logging.yaml',
-        default_level=logging.ERROR,
-        env_key='LOG_CFG'
-    ):
+        default_level=logging.ERROR
+        ):
     """Setup logging configuration
 
     """
     path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
     if os.path.exists(path):
         with open(path, 'rt') as config_file:
             config = yaml.safe_load(config_file.read())
@@ -40,7 +36,7 @@ def load_config():
     Load configuration
     """
     path = '/etc/hem.yaml'
-    path_list = ['/etc/hem.yaml', 'hem.yaml']
+    path_list = ['hem.yaml', '/etc/hem.yaml']
     env_path = os.getenv('HEM_CONFIG', None)
     if env_path:
         path_list.insert(0, env_path)
@@ -185,7 +181,7 @@ def runApp(**kwargs):
         else:
             DEFAULT_DISCOVERY = {}
 
-        with PikeManager(['.', 'drivers']) as mgr:
+        with PikeManager(['.', 'drivers']):
             metrics_driver = pike.discovery.py.get_module_by_name('hemApp.drivers.metrics_' + config['metrics']['type'])
         metrics = metrics_driver.instance(config['metrics'])
         
