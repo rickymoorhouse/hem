@@ -16,6 +16,7 @@ setup(
     setup_requires = ['setuptools_scm'],
     use_scm_version=True,
     install_requires = ['PyYaml', 'pike', 'click', 'requests', 'dnspython'],
+    test_requires = ['requests-mock'],
     license = "MIT",
     keywords = "monitor, http",
     #url = "http://packages.python.org/an_example_pypi_project",
