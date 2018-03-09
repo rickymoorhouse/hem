@@ -170,6 +170,10 @@ def runApp(**kwargs):
         setup_logging(default_level=logging.ERROR)
         
     config = load_config()
+    if not 'settings' in config:
+        config['settings'] = {}
+    frequency = config['settings'].get('frequency', 30)
+    logging.info("Frequency is {}".format(frequency))
     logging.info(config)
     iteration = 1
     while True:
@@ -211,7 +215,7 @@ def runApp(**kwargs):
         iteration += 1
         metrics.store()
         try:
-            time.sleep(int(30 - (end - start)))
+            time.sleep(int(frequency - (end - start)))
         except IOError:
             logging.info("Too quick!")
 
