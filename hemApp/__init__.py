@@ -159,66 +159,46 @@ def discover_hosts(src):
         click.echo("Discovery method {} not found".format(discovery_type))
         return []
 
-@click.command()
-@click.version_option()
-@click.option('-v', '--verbose', count=True)
-def runApp(**kwargs):
-    if kwargs['verbose'] > 1:
-        setup_logging(default_level=logging.DEBUG)
-    elif kwargs['verbose'] > 0:
-        setup_logging(default_level=logging.INFO)
+def initialise_metrics(metricConfig):
+    with PikeManager(['.', 'drivers']):
+        metrics_driver = pike.discovery.py.get_module_by_name(
+            'hemApp.drivers.metrics_' + metricConfig.get('type','console')
+        )
+    return metrics_driver.instance(metricConfig)
+
+def run_tests(config, metrics=None):        
+    start = time.time()
+    logging.info("Started tests at {}".format(start))
+
+    if 'discovery' in config:
+        DEFAULT_DISCOVERY = config['discovery']
     else:
-        setup_logging(default_level=logging.ERROR)
-        
-    config = load_config()
-    if not 'settings' in config:
-        config['settings'] = {}
-    frequency = config['settings'].get('frequency', 30)
-    logging.info("Frequency is {}".format(frequency))
-    logging.info(config)
-    iteration = 1
-    while True:
-        start = time.time()
-        logging.info("Iteration {} at {}".format(iteration, start))
+        DEFAULT_DISCOVERY = {}
+    
+    for test_name in config['tests']:
+        test = config['tests'][test_name]
 
-        if 'discovery' in config:
-            DEFAULT_DISCOVERY = config['discovery']
+        # Host list can be an array in the config or discovery
+        if 'hosts' in test:
+            hosts = test['hosts']
+        elif 'discovery' in test:
+            # Local discovery section inherits defaults but overrides defaults
+            discovery = DEFAULT_DISCOVERY.copy()
+            discovery.update(test['discovery']) # Python 3.5 move to context = {**defaults, **user}
+            hosts = discover_hosts(discovery)
         else:
-            DEFAULT_DISCOVERY = {}
+            hosts = []
+        logging.info("Testing {0} across {1} hosts".format(test_name, len(hosts)))
+        logging.debug(test)
+        CHECK = Check(
+            test_name,
+            test.get('path'), 
+            test.get('secure',False), 
+            test.get('verify',True), 
+            metrics)
+        results = CHECK.test_list(hosts)
+        logging.debug(results)
+    end = time.time()
+    metrics.store()
+    return (end - start)
 
-        with PikeManager(['.', 'drivers']):
-            metrics_driver = pike.discovery.py.get_module_by_name('hemApp.drivers.metrics_' + config['metrics']['type'])
-        metrics = metrics_driver.instance(config['metrics'])
-        
-        
-        for test_name in config['tests']:
-            test = config['tests'][test_name]
-            # Host list can be an array in the config or discovery
-            if 'hosts' in test:
-                hosts = test['hosts']
-            elif 'discovery' in test:
-                discovery = DEFAULT_DISCOVERY.copy()
-                discovery.update(test['discovery']) # Python 3.5 move to context = {**defaults, **user}
-                hosts = discover_hosts(discovery)
-            else:
-                hosts = []
-            logging.info("Testing {0} across {1} hosts".format(test_name, len(hosts)))
-            logging.debug("{} - {}".format(test,test.get('url')))
-            CHECK = Check(
-                test_name,
-                test.get('path'), 
-                test.get('secure',False), 
-                test.get('verify',True), 
-                metrics)
-            results = CHECK.test_list(hosts)
-            logging.debug(results)
-        end = time.time()
-        iteration += 1
-        metrics.store()
-        try:
-            time.sleep(int(frequency - (end - start)))
-        except IOError:
-            logging.info("Too quick!")
-
-if __name__ == '__main__':
-    runApp()

@@ -1,3 +1,5 @@
+settings:
+  frequency: 10
 discovery:
   type: dns
 metrics:

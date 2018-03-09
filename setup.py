@@ -28,7 +28,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'hem=hemApp:runApp',
+            'hem=hemApp.cli:main',
         ],
     },    
 )
