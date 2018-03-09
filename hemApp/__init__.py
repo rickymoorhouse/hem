@@ -160,6 +160,7 @@ def discover_hosts(src):
         return []
 
 @click.command()
+@click.version_option()
 @click.option('-v', '--verbose', count=True)
 def runApp(**kwargs):
     if kwargs['verbose'] > 1:

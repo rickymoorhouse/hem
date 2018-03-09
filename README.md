@@ -1,8 +1,15 @@
 # HEM - HTTP Endpoint Monitor
 
+To install hem, use:
+pip install py-sample --extra-index-url http://hem.rickymoorhouse.co.uk/pypi/
+
 ## Config syntax
 
-The config.yaml is made up of three key sections:
+The config.yaml is made up of sections:
+
+ - settings - general settings
+ 
+    frequency: 30 // Frequency to run tests
 
  - metrics - Where to store the results of the testing e.g. graphite:
 

@@ -10,10 +10,11 @@ def read(fname):
 
 setup(
     name = "hemApp",
-    version = "0.1",
     author = "Ricky Moorhouse",
     author_email = "hem@rickymoorhouse.uk",
     description = ("HTTP Endpoint Monitor - keeping the loose ends tied up"),
+    setup_requires = ['setuptools_scm'],
+    use_scm_version=True,
     install_requires = ['PyYaml', 'pike', 'click', 'requests', 'dnspython'],
     license = "MIT",
     keywords = "monitor, http",
