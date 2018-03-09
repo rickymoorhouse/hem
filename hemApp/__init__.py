@@ -117,14 +117,15 @@ class Check(object):
             self.logger.debug(connection)
             self.report_failure(param, connection.message)
             status = 0000
-        self.metrics.stage(
-            "{}.{}.result".format(self.name, param.replace('.', '_')),
-            status
-            )
-        self.metrics.stage(
-            "{}.{}.time".format(self.name, param.replace('.', '_')),
-            time.total_seconds()
-            )
+        if self.metrics:
+            self.metrics.stage(
+                "{}.{}.result".format(self.name, param.replace('.', '_')),
+                status
+                )
+            self.metrics.stage(
+                "{}.{}.time".format(self.name, param.replace('.', '_')),
+                time.total_seconds()
+                )
         results.append((status, time))
 
     def test_list(self, param_list):

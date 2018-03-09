@@ -12,3 +12,6 @@ pipelines:
           - pip
         script: # Modify the commands below to build your repository.
           - pip install .          
+    - step:
+        script:
+          - nosetests --with-coverage --cover-package=hemApp
