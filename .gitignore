@@ -5,3 +5,4 @@ helpers/data
 dist/
 *.egg-info/
 build/
+.eggs/
