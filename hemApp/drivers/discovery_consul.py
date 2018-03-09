@@ -13,4 +13,4 @@ def hosts(**kwargs):
     return results
 
 if __name__ == "__main__":
-    print hosts(server="192.168.0.18", name="desklight")
+    print(hosts(server="192.168.0.18", name="desklight"))
