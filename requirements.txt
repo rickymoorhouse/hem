@@ -1,5 +1,10 @@
+click
 dnspython
 pike
 requests
 PyYAML
-six
+pike
+setuptools_scm
+pytest
+pytest-cov
+requests-mock

@@ -11,5 +11,6 @@ pipelines:
         caches:
           - pip
         script: # Modify the commands below to build your repository.
-          - pip install .          
-          - python setup.py nosetests
+          - pip install -r requirements.txt
+          - python setup.py install
+          - pytest --cov-report xml:cov.xml --cov hemApp --cov-report term 

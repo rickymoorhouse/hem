@@ -7,8 +7,8 @@ class Basics(unittest.TestCase):
             import hemApp
 
             check = hemApp.Check('test', '/', secure=True, verify=True)
-            self.assertEqual('https://{}/', check.url)
-            self.assertTrue(check.verify)
+            assert check.url == 'https://{}/'
+            assert check.verify == True
 
         def test_check_invoke(self):
             import hemApp
@@ -17,9 +17,9 @@ class Basics(unittest.TestCase):
                 check = hemApp.Check('test', '/', secure=True, verify=True)
                 results = check.test_list(["1.1.1.1"])
                 (response, timing) = results[0]
-                self.assertTrue(results is not None)
-                self.assertEqual(response, 200)
-                self.assertEqual(type(timing), datetime.timedelta)
+                assert results is not None
+                assert response == 200
+                assert type(timing) is datetime.timedelta
 
 if __name__ == '__main__':
     unittest.main()
