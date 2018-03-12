@@ -5,7 +5,12 @@ import time
 
 @click.command()
 @click.version_option()
-@click.option('-v', '--verbose', count=True)
+@click.option('-v', '--verbose', 
+                help="Verbose mode, multiple -v options increase verbosity.", 
+                count=True)
+@click.option('-c', '--config', 
+                help="Specifies an alternative config file",
+                type=click.Path(exists=True))
 def main(**kwargs):
     if kwargs['verbose'] > 1:
         hemApp.setup_logging(default_level=logging.DEBUG)
@@ -14,7 +19,7 @@ def main(**kwargs):
     else:
         hemApp.setup_logging(default_level=logging.ERROR)
         
-    config = hemApp.load_config()
+    config = hemApp.load_config(kwargs['config'])
 
 
     metrics = hemApp.initialise_metrics(config['metrics'])

@@ -31,12 +31,11 @@ def setup_logging(
     else:
         logging.basicConfig(level=default_level)
 
-def load_config():
+def load_config(path = 'hem.yaml'):
     """
     Load configuration
     """
-    path = '/etc/hem.yaml'
-    path_list = ['hem.yaml', '/etc/hem.yaml']
+    path_list = [path, '/etc/hem.yaml']
     env_path = os.getenv('HEM_CONFIG', None)
     if env_path:
         path_list.insert(0, env_path)
