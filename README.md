@@ -2,7 +2,7 @@
 
 To install hem, use:
 
-    pip install py-sample --extra-index-url http://hem.rickymoorhouse.co.uk/pypi/
+    pip install hemApp --extra-index-url http://hem.rickymoorhouse.co.uk/pypi/
 
 Command line syntax:
 
@@ -15,6 +15,8 @@ Command line syntax:
     --help             Show this message and exit.
 
 By default hem will use a config file called hem.yaml in the current directory or /etc/hem.yaml unless one is specified with the --config option.
+
+
 ## Config syntax
 
 The config.yaml is made up of sections:
