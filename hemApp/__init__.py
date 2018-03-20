@@ -85,8 +85,10 @@ class Check(object):
             self.url = "https://{}" + test.get('path', '')
         else:
             self.url = "http://{}" + test.get('path', '')
+        self.method = test.get('method', "get")
         if 'headers' in test:
             self.headers = test['headers']
+        
         self.metrics = metrics
 
     def test(self, param, results):
@@ -98,7 +100,11 @@ class Check(object):
 
         try:
             http_call=getattr(requests,self.method) 
-            result = http_call(self.url.format(param), timeout=self.timeout, verify=self.verify)
+            result = http_call(
+                self.url.format(param), 
+                headers=self.headers,
+                timeout=self.timeout, 
+                verify=self.verify)
             self.logger.debug("Response text: %s", result.text)
             time = result.elapsed
             result.raise_for_status()
