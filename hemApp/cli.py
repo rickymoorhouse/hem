@@ -8,9 +8,9 @@ import time
 @click.option('-v', '--verbose', 
                 help="Verbose mode, multiple -v options increase verbosity.", 
                 count=True)
-@click.option('-c', '--config', 
+@click.option('-c', '--config', required=False, 
                 help="Specifies an alternative config file",
-                type=click.Path(exists=True))
+                type=click.Path())
 def main(**kwargs):
     if kwargs['verbose'] > 1:
         hemApp.setup_logging(default_level=logging.DEBUG)

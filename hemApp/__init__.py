@@ -71,17 +71,22 @@ class Check(object):
     url = ""
     method = "get"
     name = ""
+    headers = {}
     timeout = 10
     metrics = None
 
-    def __init__(self, name, path, secure=False, verify=True, metrics=None):
+    def __init__(self, name, test, metrics=None):
+        #path, secure=False, verify=True, metrics=None):
         self.logger = logging.getLogger(__name__)
         self.name = name
-        self.verify = verify
-        if secure:
-            self.url = "https://{}" + path
+
+        self.verify = test.get('verify', True)
+        if test.get('secure', False):
+            self.url = "https://{}" + test.get('path', '')
         else:
-            self.url = "http://{}" + path
+            self.url = "http://{}" + test.get('path', '')
+        if 'headers' in test:
+            self.headers = test['headers']
         self.metrics = metrics
 
     def test(self, param, results):
@@ -192,10 +197,10 @@ def run_tests(config, metrics=None):
         logging.debug(test)
         CHECK = Check(
             test_name,
-            test.get('path'), 
-            test.get('secure',False), 
-            test.get('verify',True), 
+            test,
             metrics)
+#            test.get('secure',False), 
+#            test.get('verify',True), 
         results = CHECK.test_list(hosts)
         logging.debug(results)
     end = time.time()

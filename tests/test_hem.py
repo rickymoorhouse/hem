@@ -5,8 +5,8 @@ import datetime
 class Basics(unittest.TestCase):
         def test_check_init(self):
             import hemApp
-
-            check = hemApp.Check('test', '/', secure=True, verify=True)
+            test = {'path':'/', 'secure':True, 'verify':True}
+            check = hemApp.Check('test', test)
             assert check.url == 'https://{}/'
             assert check.verify == True
 
@@ -14,7 +14,8 @@ class Basics(unittest.TestCase):
             import hemApp
             with requests_mock.mock() as m:
                 m.get('https://1.1.1.1/', text="")
-                check = hemApp.Check('test', '/', secure=True, verify=True)
+                test = {'path':'/', 'secure':True, 'verify':True}
+                check = hemApp.Check('test', test)
                 results = check.test_list(["1.1.1.1"])
                 (response, timing) = results[0]
                 assert results is not None
