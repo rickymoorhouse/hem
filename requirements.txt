@@ -1,0 +1,11 @@
+click
+dnspython
+pike
+requests
+PyYAML
+pike
+setuptools_scm
+pytest
+coverage
+requests-mock
+mock
