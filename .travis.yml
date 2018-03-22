@@ -15,3 +15,4 @@ install:
 # command to run tests
 script:
   - coverage run --source hemApp -m py.test
+  - coverage report
