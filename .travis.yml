@@ -11,6 +11,7 @@ python:
   - "3.7-dev"  # 3.7 development branch
 # command to install dependencies
 install:
+  - pip install -r test_requires.txt
   - pip install .
 # command to run tests
 script:
