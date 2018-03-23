@@ -1,5 +1,7 @@
 # HEM - HTTP Endpoint Monitor
 
+[![Build Status](https://travis-ci.org/rickymoorhouse/hem.svg?branch=master)](https://travis-ci.org/rickymoorhouse/hem) [![PyPI version fury.io](https://badge.fury.io/py/hemApp.svg)](https://pypi.python.org/pypi/hemApp/)
+
 To install hem, use:
 
     pip install hemApp
