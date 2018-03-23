@@ -1,7 +1,6 @@
 import unittest
 import requests_mock
 import datetime
-from unittest.mock import create_autospec
 from click.testing import CliRunner
 
 class Basics(unittest.TestCase):
@@ -13,7 +12,6 @@ class Basics(unittest.TestCase):
         def test_cli_no_config(self):
             import hemApp
             import hemApp.cli
-            #mock_function = create_autospec(hemApp.load_config, return_value={})
             runner = CliRunner()
             result = runner.invoke(hemApp.cli.main, ['--config', 'test_cli.yaml'])
             assert result.exit_code == 2
