@@ -13,10 +13,21 @@ class Basics(unittest.TestCase):
             import hemApp
             import hemApp.cli
             runner = CliRunner()
-            result = runner.invoke(hemApp.cli.main, ['--config', 'test_cli.yaml'])
+            result = runner.invoke(hemApp.cli.main, ['--config', 'no-config.yaml'])
             assert result.exit_code == 2
             #mock_function.assert_called()
             assert "No config" in result.output
+        def test_cli_config(self):
+            import hemApp
+            import hemApp.cli
+            runner = CliRunner()
+            result = runner.invoke(hemApp.cli.main, [
+                '--config', 
+                __file__.replace('test_cli.py','test_cli.yaml')
+                ])
+            assert result.exit_code == -1
+            #mock_function.assert_called()
+            assert "No config" not in result.output
 
 
 
