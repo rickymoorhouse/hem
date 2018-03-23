@@ -2,7 +2,7 @@
 
 To install hem, use:
 
-    pip install hemApp --extra-index-url http://hem.rickymoorhouse.co.uk/pypi/
+    pip install hemApp
 
 Command line syntax:
 
