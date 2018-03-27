@@ -7,26 +7,33 @@ python:
 - 3.5-dev
 - '3.6'
 - 3.6-dev
-install:
-- pip install -r test_requires.txt
-- pip install .
-script:
-- coverage run --source hemApp -m py.test
-- coverage report
-- coveralls
-deploy:
-  - provider: pypi
-    user: rickymoorhouse
-    password:
-      secure: 5UiATN5Dv5vNZ8nwws0NX25501KgFLcpgIK1q+J3KxR6wOXEc01d76oHYpwLAs0WQvou/yFbUITbsLUva6zGivF4igxuD+wViV5m9TzDfTfKX80hBz1Fnb3xno94uVF530voAkU7ugDCDimSG+KPRboLZrRhZaVtdD7pZgf3E9NJy+bqsVugXt4KRJQoVBSk7aUdPXZ5S2Xc5bxbw3WpsHXPvFxro8kOPrXQ7x7SjGfgyooe6g/SyrNeL23PV1ZzdkQBVcDyvkm+/G8sg0lKa6nc5WTPBSavVx+dMUUd54qYI+b2JdF7ws3GylYNoqf2PYOiJnTZYO1XGkYdORz+Ewc0Pr8k7qHKVOGhBT0zqbvUvf7FxueNEkAOpZ909HUUXdAul9p5PGTISjBzCSgRp+Xz+ki7V+QzkhVARPZxJaFwU2nmFFHdNmWsMc/PvAqAd5Zn07shIkn43dHMSpLxaY6Da6AGYTMMBwPXyUP3SYTgykaLFvIkD5hBpIuQzrDd+0p+Pd03pKqzn5ZCloSAjB8Qcu6LYhOx/HhNrc+yIOM7hfmHTpH+jYnDcVObfV2xIP0vIzs0tAU4tIGyuaz74TWbQ60NGvxICo0L5iTffH8ksGNvyNfwvXyHITnAgtIc68A6SAznCPxuzaAFo/n1hEF22A87qycXd2kHSoJa9no=
-    on:
-      tags: true
-      branch: master
-  - provider: releases
-    api_key:
-      secure: jJnnrpjIN+1ekVksml1yuyP6mcjsmSLBtzd31k4LRoW5/o4JSv1f1cvi1TIhz8eM51Z15MY3hWWkAGfnvtzsJHfASaQgANIDROxjqIAzJ/Gq8notPNqPrxPJKSUI1S923t69ZYGizLfCi78EVVuExNNJMO4YyhAmUFZOJE4Li25sg7iGQzY42ukKaqqJYXlBGJKeK8+IZbrKoX1ksfFQJ6iU6Y9gWw3TJM+AN9uw9fGjHHZTNQxUxLK7g77fXOuv4E6r7Ps3vEbav1Iu+BjjwI/+emx4bSqRmgyCybug8ypu9Ckj8qM46uWXGbZCGqWxUycrydGPuQNr1Q+Sf8dh1Q2tkUrsBNQVPmlUEuEGOe3e1uNQY7N80dNRYcKL9bj/nKrEa3nHXETtCogT+dTTbXO1/ZQ2runIfcnCdA77ETVVFNl0+fRER5G7we+tak7s1B5pEMfRvFmYfmGlwdi84XhtBruYFRxBXJJuucpLRPbF9At34Lmaf89xdRpicR7b4V19AAOBcczSHJ5lt3l+EY5jh+6Xvla+65BWFGx39vkOM3v2M/Qt8ayb/UGHzIz9oJ/FvKNLAGNL5K6G7hdQ5Ff/Ei/ejeUscYohjLQ4Qm7bKXkA48anFhLMJQXr5fTyDIIQ0oOKzxUPzO+B/ZUs0diPDKMJKJ72jLTm8NGt58E=
-    file: dist/hemApp*.tar.gz
-    on:
-      repo: rickymoorhouse/hem
-      tags: true
-      branch: master
+jobs:
+  include:
+    install:
+      - pip install -r test_requires.txt
+      - pip install .
+    script:
+      - coverage run --source hemApp -m py.test
+      - coverage report
+      - coveralls
+    stage: PyPI release
+      script: skip
+      deploy:
+        provider: pypi
+        user: rickymoorhouse
+        password:
+          secure: 5UiATN5Dv5vNZ8nwws0NX25501KgFLcpgIK1q+J3KxR6wOXEc01d76oHYpwLAs0WQvou/yFbUITbsLUva6zGivF4igxuD+wViV5m9TzDfTfKX80hBz1Fnb3xno94uVF530voAkU7ugDCDimSG+KPRboLZrRhZaVtdD7pZgf3E9NJy+bqsVugXt4KRJQoVBSk7aUdPXZ5S2Xc5bxbw3WpsHXPvFxro8kOPrXQ7x7SjGfgyooe6g/SyrNeL23PV1ZzdkQBVcDyvkm+/G8sg0lKa6nc5WTPBSavVx+dMUUd54qYI+b2JdF7ws3GylYNoqf2PYOiJnTZYO1XGkYdORz+Ewc0Pr8k7qHKVOGhBT0zqbvUvf7FxueNEkAOpZ909HUUXdAul9p5PGTISjBzCSgRp+Xz+ki7V+QzkhVARPZxJaFwU2nmFFHdNmWsMc/PvAqAd5Zn07shIkn43dHMSpLxaY6Da6AGYTMMBwPXyUP3SYTgykaLFvIkD5hBpIuQzrDd+0p+Pd03pKqzn5ZCloSAjB8Qcu6LYhOx/HhNrc+yIOM7hfmHTpH+jYnDcVObfV2xIP0vIzs0tAU4tIGyuaz74TWbQ60NGvxICo0L5iTffH8ksGNvyNfwvXyHITnAgtIc68A6SAznCPxuzaAFo/n1hEF22A87qycXd2kHSoJa9no=
+        on:
+          tags: true
+          branch: master
+    stage: GitHub release
+      script: skip
+      deploy:
+        provider: releases
+        api_key:
+          secure: jJnnrpjIN+1ekVksml1yuyP6mcjsmSLBtzd31k4LRoW5/o4JSv1f1cvi1TIhz8eM51Z15MY3hWWkAGfnvtzsJHfASaQgANIDROxjqIAzJ/Gq8notPNqPrxPJKSUI1S923t69ZYGizLfCi78EVVuExNNJMO4YyhAmUFZOJE4Li25sg7iGQzY42ukKaqqJYXlBGJKeK8+IZbrKoX1ksfFQJ6iU6Y9gWw3TJM+AN9uw9fGjHHZTNQxUxLK7g77fXOuv4E6r7Ps3vEbav1Iu+BjjwI/+emx4bSqRmgyCybug8ypu9Ckj8qM46uWXGbZCGqWxUycrydGPuQNr1Q+Sf8dh1Q2tkUrsBNQVPmlUEuEGOe3e1uNQY7N80dNRYcKL9bj/nKrEa3nHXETtCogT+dTTbXO1/ZQ2runIfcnCdA77ETVVFNl0+fRER5G7we+tak7s1B5pEMfRvFmYfmGlwdi84XhtBruYFRxBXJJuucpLRPbF9At34Lmaf89xdRpicR7b4V19AAOBcczSHJ5lt3l+EY5jh+6Xvla+65BWFGx39vkOM3v2M/Qt8ayb/UGHzIz9oJ/FvKNLAGNL5K6G7hdQ5Ff/Ei/ejeUscYohjLQ4Qm7bKXkA48anFhLMJQXr5fTyDIIQ0oOKzxUPzO+B/ZUs0diPDKMJKJ72jLTm8NGt58E=
+        file: dist/hemApp*.tar.gz
+        on:
+          repo: rickymoorhouse/hem
+          tags: true
+          branch: master
