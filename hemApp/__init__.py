@@ -113,21 +113,21 @@ class Check(object):
             status = result.status_code
         except requests.exceptions.HTTPError as he:
             self.logger.debug(he)
-            self.report_failure(param, he.message)
+            self.report_failure(param, result.text)
             elapsed_time = result.elapsed
             status = result.status_code
         except requests.exceptions.SSLError as ssl_error:
             self.logger.debug(ssl_error)
-            self.report_failure(param, ssl_error.message)
+            self.report_failure(param, ssl_error.strerror)
             status = 000
         except requests.exceptions.ConnectTimeout as timeout:
             self.logger.debug(timeout)
-            self.report_failure(param, timeout.message)
+            self.report_failure(param, timeout.strerror)
             status = 000
             elapsed_time = timedelta(seconds=self.timeout)
         except requests.exceptions.ConnectionError as connection:
             self.logger.debug(connection)
-            self.report_failure(param, connection.message)
+            self.report_failure(param, connection.strerror)
             status = 0000
         if self.metrics:
             self.metrics.stage(
@@ -140,7 +140,7 @@ class Check(object):
                 )
             self.metrics.stage(
                 "{}.{}.roundtrip".format(self.name, param.replace('.', '_')),
-                roundtrip_time.total_seconds()
+                roundtrip_time
                 )
         results.append((status, elapsed_time))
 
@@ -163,13 +163,13 @@ class Check(object):
         click.echo(click.style("{} Failed with {}".format(param, message),fg='red'))
 
 
-def discover_hosts(src):
+def discover_hosts(src, metrics=None):
     discovery_type = src['type']
     try:
         host_list = list()
         with PikeManager(['.', 'drivers']):
             discovery = pike.discovery.py.get_module_by_name('hemApp.drivers.discovery_' + discovery_type)
-            host_list = discovery.hosts(**src)
+            host_list = discovery.hosts(**src, metrics=metrics)
             return host_list
     except ImportError as e:
         logging.exception(e)
@@ -202,7 +202,7 @@ def run_tests(config, metrics=None):
             # Local discovery section inherits defaults but overrides defaults
             discovery = DEFAULT_DISCOVERY.copy()
             discovery.update(test['discovery']) # Python 3.5 move to context = {**defaults, **user}
-            hosts = discover_hosts(discovery)
+            hosts = discover_hosts(discovery, metrics)
         else:
             hosts = []
         logging.info("Testing {0} across {1} hosts".format(test_name, len(hosts)))
