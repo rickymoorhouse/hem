@@ -15,7 +15,7 @@ def hosts(**kwargs):
         results.append(rdata.address)
     elapsed = time.time() - starttime
     logger.info("Lookup of {} took {}".format(kwargs['name'], elapsed))
-    if 'metrics' in kwargs:
+    if 'metrics' in kwargs and None != kwargs['metrics']:
         kwargs['metrics'].stage(
             'discovery_dns.{}.time'.format(kwargs['name'].replace('.','_')), 
             elapsed)

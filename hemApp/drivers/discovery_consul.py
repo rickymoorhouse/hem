@@ -16,7 +16,8 @@ def hosts(**kwargs):
         results.append("{}:{}".format(node['Address'], node['ServicePort']))
     elapsed = time.time() - starttime
     logger.info("Lookup of {} took {}".format(service, elapsed))
-    if 'metrics' in kwargs:
+    if 'metrics' in kwargs and None != kwargs['metrics']:
+        
         kwargs['metrics'].stage(
             'discovery_consul.{}.time'.format(service.replace('.','_')), 
             elapsed)
