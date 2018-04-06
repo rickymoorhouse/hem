@@ -96,23 +96,25 @@ class Check(object):
         The core testing -
         takes in the parameter to test the check with and returns status and time
         """
-        time = timedelta(seconds=0)
+        elapsed_time = timedelta(seconds=0)
 
         try:
             http_call=getattr(requests,self.method) 
+            start = time.time()
             result = http_call(
                 self.url.format(param), 
                 headers=self.headers,
                 timeout=self.timeout, 
                 verify=self.verify)
             self.logger.debug("Response text: %s", result.text)
-            time = result.elapsed
+            elapsed_time = result.elapsed
+            roundtrip_time = time.time() - start
             result.raise_for_status()
             status = result.status_code
         except requests.exceptions.HTTPError as he:
             self.logger.debug(he)
             self.report_failure(param, he.message)
-            time = result.elapsed
+            elapsed_time = result.elapsed
             status = result.status_code
         except requests.exceptions.SSLError as ssl_error:
             self.logger.debug(ssl_error)
@@ -122,7 +124,7 @@ class Check(object):
             self.logger.debug(timeout)
             self.report_failure(param, timeout.message)
             status = 000
-            time = timedelta(seconds=self.timeout)
+            elapsed_time = timedelta(seconds=self.timeout)
         except requests.exceptions.ConnectionError as connection:
             self.logger.debug(connection)
             self.report_failure(param, connection.message)
@@ -134,9 +136,13 @@ class Check(object):
                 )
             self.metrics.stage(
                 "{}.{}.time".format(self.name, param.replace('.', '_')),
-                time.total_seconds()
+                elapsed_time.total_seconds()
                 )
-        results.append((status, time))
+            self.metrics.stage(
+                "{}.{}.roundtrip".format(self.name, param.replace('.', '_')),
+                roundtrip_time.total_seconds()
+                )
+        results.append((status, elapsed_time))
 
     def test_list(self, param_list):
         """ Run test over a list of parameters """
