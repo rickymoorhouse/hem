@@ -171,7 +171,12 @@ def discover_hosts(src, metrics=None):
             discovery = pike.discovery.py.get_module_by_name('hemApp.drivers.discovery_' + discovery_type)
             if None != metrics:
                 src['metrics'] = metrics
-            host_list = discovery.hosts(**src)
+            try:
+                host_list = discovery.hosts(**src)
+            except Exception as e:
+                logging.error("{} discovery of failed with exception".format(discovery_type))
+                logging.exception(e)
+                host_list = []
             return host_list
     except ImportError as e:
         logging.exception(e)
