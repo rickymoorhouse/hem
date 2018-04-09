@@ -16,10 +16,15 @@ class Basics(unittest.TestCase):
                         "type":"dns",
                         "name":"notfound.nonexistent"})
                 self.assertEqual(cm.output, ['ERROR:hemApp.drivers.discovery_dns:DNS name notfound.nonexistent not found'])
-                self.assertEqual(type(hosts), list)
-                self.assertEqual(hosts, [])
+            except AttributeError:
+                # self.assertLogs doesn't work in Python 2.x
+                hosts = hemApp.discover_hosts({
+                    "type":"dns",
+                    "name":"notfound.nonexistent"})
             except dns.resolver.NXDOMAIN:
                 self.assertFalse(True)
+            self.assertEqual(type(hosts), list)
+            self.assertEqual(hosts, [])
 
 if __name__ == '__main__':
     unittest.main()
