@@ -5,6 +5,7 @@ requests
 PyYAML
 pike
 setuptools_scm
+mock
 pytest
 pytest-cov
 requests-mock
