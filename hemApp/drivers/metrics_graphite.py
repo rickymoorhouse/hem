@@ -5,6 +5,7 @@ import hemApp
 class instance(hemApp.Metrics):
     config = None
     server = None
+    prefix = "hem"
     port = 2003
     cache = []
 
@@ -12,10 +13,11 @@ class instance(hemApp.Metrics):
         self.config = config
         self.server = config.get('server', 'localhost')
         self.port = config.get('port', 2003)
+        self.prefix = config.get('prefix', 'hem')
         self.logger = logging.getLogger(__name__)
 
     def stage(self, name, value):
-        message = 'hem.{} {} {}'.format(name, value, int(time.time()))
+        message = '{}.{} {} {}'.format(self.prefix, name, value, int(time.time()))
         self.cache.append(message)
         self.logger.debug("storing {}".format(message))
 
