@@ -31,8 +31,9 @@ class Basics(unittest.TestCase):
             import hemApp
             hosts = hemApp.discover_hosts({
                 "type":"file",
-                "name":"hosts.yaml"})
+                "name":"tests/hosts.yaml"})
             self.assertEqual(type(hosts), list)
+            print(hosts)
             assert 'hostone' in hosts
 if __name__ == '__main__':
     unittest.main()
