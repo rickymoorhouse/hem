@@ -1,5 +1,5 @@
 import unittest
-import dns.resolver
+import mock
 
 class Basics(unittest.TestCase):
         def test_check_init(self):
@@ -35,5 +35,20 @@ class Basics(unittest.TestCase):
             self.assertEqual(type(hosts), list)
             print(hosts)
             assert 'hostone' in hosts
+
+        def test_check_metrics(self, capsys):
+            import hemApp
+            metrics = hemApp.initialise_metrics({"type":"console"})
+            discovery = {
+                "type":"file",
+                "name":"tests/hosts.yaml",
+                "metrics": metrics}
+            hemApp.discover_hosts(discovery)
+            try:
+                captured = capsys.readouterr()
+                assert "discovery_file" in captured.out
+            except AttributeError:
+                print("Capsys not working in python 3.3 or 3.4 - investigating")
+            
 if __name__ == '__main__':
     unittest.main()
