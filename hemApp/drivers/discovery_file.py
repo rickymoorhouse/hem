@@ -14,7 +14,10 @@ def hosts(**kwargs):
         with open(kwargs['name'], 'rt') as source_file:
             hosts = yaml.safe_load(source_file)
             for host in hosts:
-                results.append(host)
+                if 'key' in kwargs:
+                    results.append(host.get(kwargs['key']))
+                else:
+                    results.append(host)
     except FileNotFoundError:
         logger.error("File not found")
     elapsed = time.time() - starttime
