@@ -35,6 +35,16 @@ def test_check_content():
     print(hosts)
     assert 'hostone' in hosts
 
+def test_check_content_key():
+    import hemApp
+    hosts = hemApp.discover_hosts({
+        "type":"file",
+        "name":"tests/hosts_key.yaml",
+        "key":"hostname"})
+    assert type(hosts) == list
+    print(hosts)
+    assert 'host1.example.com' in hosts
+
 def test_check_metrics(capsys):
     import hemApp
     metrics = hemApp.initialise_metrics({"type":"console"})
