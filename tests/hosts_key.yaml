@@ -1,0 +1,6 @@
+ - 
+   hostname: host1.example.com
+   type: web
+ - 
+   hostname: host2.example.com
+   type: web
