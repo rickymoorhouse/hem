@@ -1,5 +1,6 @@
 import unittest
 import requests_mock
+import requests
 import datetime
 import hemApp
 class Basics(unittest.TestCase):
@@ -18,6 +19,16 @@ class Basics(unittest.TestCase):
                 (response, timing) = results[0]
                 assert results is not None
                 assert response == 200
+                assert type(timing) is datetime.timedelta
+        def test_ssl_error(self):
+            with requests_mock.mock() as m:
+                m.get('https://1.1.1.1/', exc=requests.exceptions.SSLError)
+                test = {'path':'/', 'secure':True, 'verify':True}
+                check = hemApp.Check('test', test)
+                results = check.test_list(["1.1.1.1"])
+                (response, timing) = results[0]
+                assert results is not None
+                assert response == 526
                 assert type(timing) is datetime.timedelta
 
         def test_check_headers(self):
