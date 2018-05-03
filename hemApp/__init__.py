@@ -119,11 +119,11 @@ class Check(object):
         except requests.exceptions.SSLError as ssl_error:
             self.logger.debug(ssl_error)
             self.report_failure(param, ssl_error.strerror)
-            status = 000
+            status = 526
         except requests.exceptions.ConnectTimeout as timeout:
             self.logger.debug(timeout)
             self.report_failure(param, timeout.strerror)
-            status = 000
+            status = 522
             elapsed_time = timedelta(seconds=self.timeout)
         except requests.exceptions.ConnectionError as connection:
             self.logger.debug(connection)
