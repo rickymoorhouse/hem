@@ -30,6 +30,16 @@ class Basics(unittest.TestCase):
                 assert results is not None
                 assert response == 526
                 assert type(timing) is datetime.timedelta
+        def test_connection_timeout(self):
+            with requests_mock.mock() as m:
+                m.get('https://1.1.1.1/', exc=requests.exceptions.ConnectTimeout)
+                test = {'path':'/', 'secure':True, 'verify':True}
+                check = hemApp.Check('test', test)
+                results = check.test_list(["1.1.1.1"])
+                (response, timing) = results[0]
+                assert results is not None
+                assert response == 522
+                assert type(timing) is datetime.timedelta
 
         def test_check_headers(self):
             import hemApp
