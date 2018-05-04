@@ -29,6 +29,30 @@ class Basics(unittest.TestCase):
             #mock_function.assert_called()
             assert "No config" not in result.output
 
+        def test_cli_nosettings(self):
+            import hemApp
+            import hemApp.cli
+            try:
+                with unittest.assertLogs(level='ERROR') as cm:        
+                    runner = CliRunner()
+                    result = runner.invoke(hemApp.cli.main, [
+                        '--config', 
+                        __file__.replace('test_cli.py','test_nosettings.yaml'),
+                        '-vv'
+                        ])
+                    assert 'ERROR:hemApp.drivers.discovery_file:File not found' in cm.output
+            except AttributeError:
+                runner = CliRunner()
+                result = runner.invoke(hemApp.cli.main, [
+                    '--config', 
+                    __file__.replace('test_cli.py','test_nosettings.yaml'),
+                    '-vv'
+                    ])
+            assert result.exit_code == -1
+            #mock_function.assert_called()
+            assert "No config" not in result.output
+                
+
 
 
 if __name__ == '__main__':
