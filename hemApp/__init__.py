@@ -108,7 +108,6 @@ class Check(object):
                 verify=self.verify)
             self.logger.debug("Response text: %s", result.text)
             elapsed_time = result.elapsed
-            roundtrip_time = time.time() - start
             result.raise_for_status()
             status = result.status_code
         except requests.exceptions.HTTPError as he:
@@ -129,6 +128,7 @@ class Check(object):
             self.logger.debug(connection)
             self.report_failure(param, connection.strerror)
             status = 0000
+        roundtrip_time = time.time() - start
         if self.metrics:
             self.metrics.stage(
                 "{}.{}.result".format(self.name, param.replace('.', '_')),
