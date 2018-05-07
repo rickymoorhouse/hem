@@ -1,4 +1,7 @@
-from unittest.mock import patch
+try:
+    from unittest.mock import patch
+except:
+    from mock import patch
 from pykafka import KafkaClient
 @patch('pykafka.KafkaClient')
 def test_check_init(MockKafka):

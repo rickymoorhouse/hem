@@ -10,3 +10,5 @@ pytest
 pytest-cov
 requests-mock
 python-coveralls
+pykafka
+prometheus_client
