@@ -22,14 +22,17 @@ class instance(hemApp.Metrics):
         self.logger.debug("storing {}".format(message))
 
     def store(self):
-        sock = socket.socket()
-        sock.connect((self.server, self.port))
-        self.logger.info("Storing {} records".format(len(self.cache)))
-        self.logger.debug("\n".join(self.cache))
-        sock.sendall("\n".join(self.cache).encode())        
-        sock.close()
-        # Clear out cache
-        self.cache[:] = []
+        try:
+            sock = socket.socket()
+            sock.connect((self.server, self.port))
+            self.logger.info("Storing {} records".format(len(self.cache)))
+            self.logger.debug("\n".join(self.cache))
+            sock.sendall("\n".join(self.cache).encode())        
+            sock.close()
+            # Clear out cache
+            self.cache[:] = []
+        except socket.error as se:
+            self.logger.exception(se)
 
     def __del__(self):
         logging.info("Storing remaining data ({} records)".format(len(self.cache)))
