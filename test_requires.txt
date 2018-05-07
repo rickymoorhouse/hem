@@ -8,6 +8,7 @@ setuptools_scm
 mock
 pytest
 pytest-cov
+pytest-mock
 requests-mock
 python-coveralls
 pykafka
