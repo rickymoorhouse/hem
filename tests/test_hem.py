@@ -24,6 +24,16 @@ def test_check_invoke():
         assert results is not None
         assert response == 200
         assert type(timing) is datetime.timedelta
+def test_check_mtls_invoke():
+    with requests_mock.mock() as m:
+        m.get('https://1.1.1.1/', text="")
+        test = {'path':'/', 'secure':True, 'verify':True, 'certificate': 'certificate.pem'}
+        check = hemApp.Check('test', test)
+        results = check.test_list(["1.1.1.1"])
+        (response, timing) = results[0]
+        assert results is not None
+        assert response == 200
+        assert type(timing) is datetime.timedelta
 def test_ssl_error():
     with requests_mock.mock() as m:
         m.get('https://1.1.1.1/', exc=requests.exceptions.SSLError)

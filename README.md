@@ -44,6 +44,7 @@ The config.yaml is made up of sections:
         path: Path to test
         secure: Is this using HTTPS?
         hosts: List of hosts to use 
+        certificate: Path to keypair to use for mTLS - must be un-encrypted
         discovery: discovery block for this test - merged with top level block 
 ```
 

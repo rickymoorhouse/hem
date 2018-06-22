@@ -74,6 +74,7 @@ class Check(object):
     headers = {}
     timeout = 10
     metrics = None
+    certificate = None
 
     def __init__(self, name, test, metrics=None):
         #path, secure=False, verify=True, metrics=None):
@@ -88,7 +89,10 @@ class Check(object):
         self.method = test.get('method', "get")
         if 'headers' in test:
             self.headers = test['headers']
-        
+        if 'certificate' in test:
+            self.logger.info("Setting certificate to %s", test['certificate'])
+            self.certificate = test['certificate']
+
         self.metrics = metrics
 
     def test(self, param, results):
@@ -105,7 +109,9 @@ class Check(object):
                 self.url.format(param), 
                 headers=self.headers,
                 timeout=self.timeout, 
-                verify=self.verify)
+                verify=self.verify,
+                cert=self.certificate
+                )
             self.logger.debug("Response text: %s", result.text)
             elapsed_time = result.elapsed
             result.raise_for_status()
