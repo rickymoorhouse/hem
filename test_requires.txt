@@ -10,6 +10,7 @@ pytest
 pytest-cov
 pytest-mock
 requests-mock
+coverage==4.0.3
 python-coveralls
 pykafka
 prometheus_client
