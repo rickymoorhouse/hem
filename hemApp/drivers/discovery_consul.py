@@ -3,10 +3,10 @@ import time
 import logging
 import requests
 
-logger = logging.getLogger(name=__name__)
 
 def hosts(**kwargs):
     """ return hosts from consul api """
+    logger = logging.getLogger(name=__name__)
     starttime = time.time()
     consul_server = kwargs.get("server","127.0.0.1")
     service = kwargs.get("name","consul")

@@ -1,8 +1,10 @@
 import click
 import logging
+import yaml
+import logging.config
 import hemApp
 import time
-
+import os
 @click.command()
 @click.version_option()
 @click.option('-v', '--verbose', 
@@ -13,12 +15,23 @@ import time
                 type=click.Path())
 def main(**kwargs):
     if kwargs['verbose'] > 1:
-        hemApp.setup_logging(default_level=logging.DEBUG)
+        loglevel = logging.DEBUG
     elif kwargs['verbose'] > 0:
-        hemApp.setup_logging(default_level=logging.INFO)
+        loglevel = logging.INFO
     else:
-        hemApp.setup_logging(default_level=logging.ERROR)
-        
+        loglevel = logging.WARNING
+    path = 'logging.yaml'
+    if os.path.exists(path):
+        with open(path, 'rt') as config_file:
+            config = yaml.safe_load(config_file.read())
+    logging.config.dictConfig(config)
+
+    logging.getLogger().setLevel(level=loglevel)
+    logger = logging.getLogger(__name__)
+    logger.debug('debug test')
+    logger.info('info test')
+    logger.warning('warning test')
+    logger.error('error test')
     config = hemApp.load_config(kwargs['config'])
 
 
@@ -27,14 +40,14 @@ def main(**kwargs):
     if not 'settings' in config:
         config['settings'] = {}
     frequency = config['settings'].get('frequency', 30)
-    logging.info("Frequency is {}".format(frequency))
-    logging.info(config)
+    logger.info("Frequency is {}".format(frequency))
+    logger.info(config)
     while True:
         duration = hemApp.run_tests(config, metrics)
         try:
             time.sleep(int(frequency - duration))
         except IOError:
-            logging.info("Too quick!")
+            logger.info("Too quick!")
 
 
 if __name__ == '__main__':

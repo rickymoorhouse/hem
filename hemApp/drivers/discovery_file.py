@@ -3,11 +3,11 @@ import time
 import logging
 import yaml
 
-logger = logging.getLogger(name=__name__)
 
 
 def hosts(**kwargs):
     """ return hosts from file """
+    logger = logging.getLogger(name=__name__)
     results = []
     starttime = time.time()
     try:

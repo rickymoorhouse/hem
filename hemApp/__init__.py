@@ -28,6 +28,7 @@ def setup_logging(
         with open(path, 'rt') as config_file:
             config = yaml.safe_load(config_file.read())
         logging.config.dictConfig(config)
+        logging.getLogger().setLevel(level=default_level)
     else:
         logging.basicConfig(level=default_level)
 
@@ -72,6 +73,7 @@ class Check(object):
     method = "get"
     name = ""
     headers = {}
+    expected = None
     timeout = 10
     metrics = None
     certificate = None
@@ -87,11 +89,13 @@ class Check(object):
         else:
             self.url = "http://{}" + test.get('path', '')
         self.method = test.get('method', "get")
-        if 'headers' in test:
-            self.headers = test['headers']
+        if 'expected' in test:
+            self.expected = test['expected']
         if 'certificate' in test:
             self.logger.info("Setting certificate to %s", test['certificate'])
             self.certificate = test['certificate']
+        if 'headers' in test:
+            self.headers = test['headers']
 
         self.metrics = metrics
 
@@ -135,10 +139,22 @@ class Check(object):
             self.report_failure(param, connection.strerror)
             status = 0000
         roundtrip_time = time.time() - start
+        success = 0
+        if self.expected:
+            self.logger.debug("Testing status of {} against {}".format(status, self.expected))
+            if status == self.expected:
+                success = 1
+        elif status == requests.codes.ok:
+            success = 1
+
         if self.metrics:
             self.metrics.stage(
                 "{}.{}.result".format(self.name, param.replace('.', '_')),
                 status
+                )
+            self.metrics.stage(
+                "{}.{}.success".format(self.name, param.replace('.', '_')),
+                success
                 )
             self.metrics.stage(
                 "{}.{}.time".format(self.name, param.replace('.', '_')),
@@ -166,7 +182,7 @@ class Check(object):
 
     def report_failure(self, param, message):
         """ Display errors """
-        click.echo(click.style("{} Failed with {}".format(param, message),fg='red'))
+        click.echo(click.style("{} Failed with {}".format(param, message.split('\n')[0]),fg='red'))
 
 
 def discover_hosts(src, metrics=None):

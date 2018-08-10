@@ -3,11 +3,11 @@ import time
 import logging
 import dns.resolver
 
-logger = logging.getLogger(name=__name__)
 
 
 def hosts(**kwargs):
     """ return hosts for passed hostname """
+    logger = logging.getLogger(name=__name__)
     results = []
     starttime = time.time()
     try:
