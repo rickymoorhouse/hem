@@ -182,7 +182,10 @@ class Check(object):
 
     def report_failure(self, param, message):
         """ Display errors """
-        click.echo(click.style("{} Failed with {}".format(param, message.split('\n')[0]),fg='red'))
+        try:
+            click.echo(click.style("{} Failed with {}".format(param, message.split('\n')[0]),fg='red'))
+        except AttributeError:
+            click.echo(message) 
 
 
 def discover_hosts(src, metrics=None):

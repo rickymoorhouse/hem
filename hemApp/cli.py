@@ -24,7 +24,7 @@ def main(**kwargs):
     if os.path.exists(path):
         with open(path, 'rt') as config_file:
             config = yaml.safe_load(config_file.read())
-    logging.config.dictConfig(config)
+            logging.config.dictConfig(config)
 
     logging.getLogger().setLevel(level=loglevel)
     logger = logging.getLogger(__name__)
