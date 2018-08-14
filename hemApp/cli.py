@@ -45,7 +45,8 @@ def main(**kwargs):
     while True:
         duration = hemApp.run_tests(config, metrics)
         try:
-            time.sleep(int(frequency - duration))
+			if int(frequency - duration) > 0:
+	            time.sleep(int(frequency - duration))
         except IOError:
             logger.info("Too quick!")
 
