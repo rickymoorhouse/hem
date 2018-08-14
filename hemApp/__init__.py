@@ -137,7 +137,7 @@ class Check(object):
         except requests.exceptions.ConnectionError as connection:
             self.logger.debug(connection)
             self.report_failure(param, connection.strerror)
-            status = 0000
+            status = 444
         roundtrip_time = time.time() - start
         success = 0
         if self.expected:
