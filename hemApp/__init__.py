@@ -12,7 +12,9 @@ import time
 import pike.discovery
 from pike.manager import PikeManager
 import threading
+import jwt
 
+hemStore = {'token':None}
 
 logging.captureWarnings(True)
 
@@ -76,6 +78,8 @@ class Check(object):
     expected = None
     timeout = 10
     metrics = None
+    auth = {}
+    token = None
     certificate = None
 
     def __init__(self, name, test, metrics=None):
@@ -96,16 +100,50 @@ class Check(object):
             self.certificate = test['certificate']
         if 'headers' in test:
             self.headers = test['headers']
+        if 'auth' in test:
+            self.auth = test['auth']
 
         self.metrics = metrics
 
+    def get_jwt_token(self, url):
+        global hemStore
+        j = requests.post(url)
+        hemStore['token'] = j.json().get('jwt', None)
+        self.logger.debug("storing token: {}".format(self.token))
+
+
+    def is_token_valid(self, url):
+        global hemStore
+        if hemStore['token'] == None:
+            self.logger.debug("No token - therefore not valid")
+            return False
+        else:
+            decoded = jwt.decode(hemStore['token'], verify=False)
+            if time.time() < decoded['exp']:
+                self.logger.debug("token still valid")
+                return True
+            else:
+                self.logger.debug("token has expired")
+                return False
+  
     def test(self, param, results):
         """
         The core testing -
         takes in the parameter to test the check with and returns status and time
         """
+        global hemStore
         elapsed_time = timedelta(seconds=0)
 
+        if self.auth.get('type', None) == "jwt":
+            self.logger.info("Using JWT, checking token")
+            # If we're using JWT, then we need a token
+            if self.is_token_valid(self.auth.get('url')) == False:
+                self.logger.info("JWT: token invalid")
+
+                # If there is no token or it's expired, then get one
+                self.get_jwt_token(self.auth.get('url'))
+            self.headers = {"Authorization":"Bearer {}".format(hemStore['token'])}
+            self.logger.info(self.headers)
         try:
             http_call=getattr(requests,self.method) 
             start = time.time()
@@ -223,7 +261,7 @@ def run_tests(config, metrics=None):
         DEFAULT_DISCOVERY = config['discovery']
     else:
         DEFAULT_DISCOVERY = {}
-    
+    store = {}
     for test_name in config['tests']:
         test = config['tests'][test_name]
 
