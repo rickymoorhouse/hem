@@ -9,3 +9,4 @@ pytest
 coverage
 requests-mock
 mock
+pyjwt

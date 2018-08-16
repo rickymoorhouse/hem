@@ -15,7 +15,7 @@ setup(
     description = ("HTTP Endpoint Monitor - keeping the loose ends tied up"),
     setup_requires = ['setuptools_scm', 'pytest', 'pytest-cov', 'requests-mock'],
     use_scm_version=True,
-    install_requires = ['PyYaml', 'pike', 'click', 'requests', 'dnspython'],
+    install_requires = ['PyYaml', 'pike', 'click', 'requests', 'dnspython', 'pyjwt'],
     license = "MIT",
     keywords = "monitor, http",
     #url = "http://packages.python.org/an_example_pypi_project",
