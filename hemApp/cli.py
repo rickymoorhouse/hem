@@ -28,10 +28,6 @@ def main(**kwargs):
 
     logging.getLogger().setLevel(level=loglevel)
     logger = logging.getLogger(__name__)
-    logger.debug('debug test')
-    logger.info('info test')
-    logger.warning('warning test')
-    logger.error('error test')
     config = hemApp.load_config(kwargs['config'])
 
 
@@ -42,8 +38,8 @@ def main(**kwargs):
     frequency = config['settings'].get('frequency', 30)
     logger.info("Frequency is {}".format(frequency))
     logger.info(config)
+    storage = hemApp.HemStore()
     while True:
-        storage = hemApp.HemStore()
         duration = hemApp.run_tests(config, metrics, storage)
         try:
             if int(frequency - duration) > 0:
