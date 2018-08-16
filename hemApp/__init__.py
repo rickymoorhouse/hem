@@ -113,7 +113,7 @@ class Check(object):
         self.metrics = metrics
         self.storage = storage
 
-    def get_jwt(self, auth):
+    def get_jwt(self, auth={}):
         j = requests.post(
             auth['url'], 
             data=auth.get('body', None), 
@@ -126,7 +126,7 @@ class Check(object):
         self.logger.debug("storing token: {}".format(token))
 
 
-    def is_jwt_valid(self, auth):
+    def is_jwt_valid(self, auth={}):
         token = self.storage.get(auth.get('key', 'jwt'))
         if token == None:
             self.logger.debug("No token - therefore not valid")
