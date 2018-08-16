@@ -43,7 +43,8 @@ def main(**kwargs):
     logger.info("Frequency is {}".format(frequency))
     logger.info(config)
     while True:
-        duration = hemApp.run_tests(config, metrics)
+        storage = hemApp.HemStore()
+        duration = hemApp.run_tests(config, metrics, storage)
         try:
             if int(frequency - duration) > 0:
                 time.sleep(int(frequency - duration))

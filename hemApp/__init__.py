@@ -14,7 +14,13 @@ from pike.manager import PikeManager
 import threading
 import jwt
 
-hemStore = {'token':None}
+class HemStore:
+    def __init__(self):
+        self.data = {}
+    def set(self, key, value):
+        self.data[key] = value
+    def get(self, key):
+        return self.data.get(key, None)
 
 logging.captureWarnings(True)
 
@@ -78,11 +84,12 @@ class Check(object):
     expected = None
     timeout = 10
     metrics = None
+    storage = None
     auth = {}
     token = None
     certificate = None
 
-    def __init__(self, name, test, metrics=None):
+    def __init__(self, name, test, metrics=None, storage=None):
         #path, secure=False, verify=True, metrics=None):
         self.logger = logging.getLogger(__name__)
         self.name = name
@@ -104,21 +111,24 @@ class Check(object):
             self.auth = test['auth']
 
         self.metrics = metrics
+        self.storage = storage
 
-    def get_jwt_token(self, url):
-        global hemStore
-        j = requests.post(url)
-        hemStore['token'] = j.json().get('jwt', None)
-        self.logger.debug("storing token: {}".format(self.token))
+    def get_jwt(self, auth):
+        j = requests.post(auth['url'], data=auth['body'], headers=auth['headers'])
+        self.logger.debug(j.status_code)
+        self.logger.debug(j.text)
+        token = j.json().get(auth['field'], None)
+        self.storage.set(auth.get('key', 'jwt'), token)
+        self.logger.debug("storing token: {}".format(token))
 
 
-    def is_token_valid(self, url):
-        global hemStore
-        if hemStore['token'] == None:
+    def is_jwt_valid(self, auth):
+        token = self.storage.get(auth.get('key', 'jwt'))
+        if token == None:
             self.logger.debug("No token - therefore not valid")
             return False
         else:
-            decoded = jwt.decode(hemStore['token'], verify=False)
+            decoded = jwt.decode(token, verify=False)
             if time.time() < decoded['exp']:
                 self.logger.debug("token still valid")
                 return True
@@ -131,18 +141,17 @@ class Check(object):
         The core testing -
         takes in the parameter to test the check with and returns status and time
         """
-        global hemStore
         elapsed_time = timedelta(seconds=0)
 
         if self.auth.get('type', None) == "jwt":
             self.logger.info("Using JWT, checking token")
             # If we're using JWT, then we need a token
-            if self.is_token_valid(self.auth.get('url')) == False:
+            if self.is_jwt_valid(self.auth) == False:
                 self.logger.info("JWT: token invalid")
 
                 # If there is no token or it's expired, then get one
-                self.get_jwt_token(self.auth.get('url'))
-            self.headers = {"Authorization":"Bearer {}".format(hemStore['token'])}
+                self.get_jwt(self.auth)
+            self.headers = {"Authorization":"Bearer {}".format(self.storage.get(self.auth.get('key', 'jwt')))}
             self.logger.info(self.headers)
         try:
             http_call=getattr(requests,self.method) 
@@ -253,7 +262,7 @@ def initialise_metrics(metricConfig):
         )
     return metrics_driver.instance(metricConfig)
 
-def run_tests(config, metrics=None):        
+def run_tests(config, metrics=None, storage=None):        
     start = time.time()
     logging.info("Started tests at {}".format(start))
 
@@ -280,7 +289,8 @@ def run_tests(config, metrics=None):
         CHECK = Check(
             test_name,
             test,
-            metrics)
+            metrics,
+            storage)
 #            test.get('secure',False), 
 #            test.get('verify',True), 
         results = CHECK.test_list(hosts)
