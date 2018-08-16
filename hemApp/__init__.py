@@ -114,7 +114,11 @@ class Check(object):
         self.storage = storage
 
     def get_jwt(self, auth):
-        j = requests.post(auth['url'], data=auth['body'], headers=auth['headers'])
+        j = requests.post(
+            auth['url'], 
+            data=auth.get('body', None), 
+            headers=auth.get('headers', None)
+        )
         self.logger.debug(j.status_code)
         self.logger.debug(j.text)
         token = j.json().get(auth['field'], None)
