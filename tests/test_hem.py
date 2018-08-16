@@ -35,11 +35,12 @@ def test_check_mtls_invoke():
         assert response == 200
         assert type(timing) is datetime.timedelta
 def test_check_jwt_invoke():
+    hemstore = hemApp.HemStore()
     with requests_mock.mock() as m:
         m.get('https://1.1.1.1/', text="")
-        m.get('https://1.1.1.1/jwt', text='{"jwt":"token"}')
+        m.post('https://1.1.1.1/jwt', text='{"jwt":"token"}')
         test = {'path':'/', 'secure':True, 'verify':True, 'auth': {'type':'jwt', 'url':'https://1.1.1.1/jwt', 'field':'jwt'}}
-        check = hemApp.Check('test', test)
+        check = hemApp.Check('test', test, storage=hemstore)
         results = check.test_list(["1.1.1.1"])
         (response, timing) = results[0]
         assert results is not None
