@@ -208,6 +208,10 @@ class Check(object):
                 success
                 )
             self.metrics.stage(
+                "{}.{}.failure".format(self.name, param.replace('.', '_')),
+                0 if success == 1 else 1
+                )
+            self.metrics.stage(
                 "{}.{}.time".format(self.name, param.replace('.', '_')),
                 elapsed_time.total_seconds()
                 )
