@@ -13,7 +13,7 @@ setup(
     author = "Ricky Moorhouse",
     author_email = "hem@rickymoorhouse.uk",
     description = ("HTTP Endpoint Monitor - keeping the loose ends tied up"),
-    setup_requires = ['setuptools_scm', 'pytest', 'pytest-cov', 'requests-mock'],
+    setup_requires = ['setuptools_scm', 'pytest', 'pytest-cov>=2.4.0', 'requests-mock'],
     use_scm_version=True,
     install_requires = ['PyYaml', 'pike', 'click', 'requests', 'dnspython', 'pyjwt'],
     license = "MIT",
