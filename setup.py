@@ -18,9 +18,10 @@ setup(
     install_requires = ['PyYaml', 'pike', 'click', 'requests', 'dnspython', 'pyjwt'],
     license = "MIT",
     keywords = "monitor, http",
-    #url = "http://packages.python.org/an_example_pypi_project",
+    url = "https://rickymoorhouse.uk/blog/2018/introducing-hem/",
     packages=find_packages(),
     long_description=read('README.md'),
+    long_description_content_type='text/markdown',
     test_suite = 'nose.collector',
     classifiers=[
         "Development Status :: 3 - Alpha",
