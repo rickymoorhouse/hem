@@ -5,6 +5,8 @@ import logging.config
 import hemApp
 import time
 import os
+import urllib3
+
 @click.command()
 @click.version_option()
 @click.option('-v', '--verbose', 
@@ -13,6 +15,8 @@ import os
 @click.option('-c', '--config', required=False, 
                 help="Specifies an alternative config file",
                 type=click.Path())
+@click.option('--curl/--no-curl', default=False,
+                help="Only show example curl commands")
 def main(**kwargs):
     if kwargs['verbose'] > 1:
         loglevel = logging.DEBUG
@@ -26,6 +30,8 @@ def main(**kwargs):
             config = yaml.safe_load(config_file.read())
             logging.config.dictConfig(config)
 
+    # As hem supports per check verification settings, don't warn on these
+    urllib3.disable_warnings()
     logging.getLogger().setLevel(level=loglevel)
     logger = logging.getLogger(__name__)
     config = hemApp.load_config(kwargs['config'])
@@ -39,6 +45,10 @@ def main(**kwargs):
     logger.info("Frequency is {}".format(frequency))
     logger.info(config)
     storage = hemApp.HemStore()
+    if kwargs['curl']:
+        hemApp.curl_commands(config)
+        exit()
+    
     while True:
         duration = hemApp.run_tests(config, metrics, storage)
         try:
