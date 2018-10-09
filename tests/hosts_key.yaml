@@ -1,6 +1,11 @@
  - 
    hostname: host1.example.com
    type: web
+   check: true
+ - 
+   hostname: host0.example.com
+   type: web
+   check: false
  - 
    hostname: host2.example.com
    type: web

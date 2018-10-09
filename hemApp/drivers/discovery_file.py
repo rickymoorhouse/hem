@@ -13,9 +13,14 @@ def hosts(**kwargs):
     try:
         with open(kwargs['name'], 'rt') as source_file:
             hosts = yaml.safe_load(source_file)
+            print(hosts)
             for host in hosts:
                 if 'key' in kwargs:
-                    results.append(host.get(kwargs['key']))
+                    if 'enabled_key' in kwargs:
+                        if host.get(kwargs['enabled_key'], True) == True:
+                            results.append(host.get(kwargs['key']))
+                    else:
+                        results.append(host.get(kwargs['key']))
                 else:
                     results.append(host)
     except FileNotFoundError:
