@@ -22,7 +22,6 @@ class HemStore:
     def get(self, key):
         return self.data.get(key, None)
 
-logging.captureWarnings(True)
 
 def setup_logging(
         default_path='logging.yaml',
@@ -112,6 +111,17 @@ class Check(object):
 
         self.metrics = metrics
         self.storage = storage
+
+    def curl_command(self):
+        command = "curl "
+        if not self.verify:
+            command = command + "-v "
+        if self.certificate:
+            command = command + "--key " + self.certificate + " --cert " + self.certificate + " "
+        for header in self.headers:
+            command = command + "-H \"{}: {}\" ".format(header, self.headers[header]) + " " 
+        command = command + self.url
+        return command
 
     def get_jwt(self, auth={}):
         j = requests.post(
@@ -238,9 +248,9 @@ class Check(object):
     def report_failure(self, param, message):
         """ Display errors """
         try:
-            click.echo(click.style("{} Failed with {}".format(param, message.split('\n')[0]),fg='red'))
+            self.logger.error("{} Failed with {}".format(param, message.split('\n')[0]))
         except AttributeError:
-            click.echo(message) 
+            self.logger.error(message) 
 
 
 def discover_hosts(src, metrics=None):
@@ -307,3 +317,12 @@ def run_tests(config, metrics=None, storage=None):
     metrics.store()
     return (end - start)
 
+def curl_commands(config):
+    for test_name in config['tests']:
+        test = config['tests'][test_name]
+        CHECK = Check(
+            test_name,
+            test,
+            metrics=None,
+            storage=None)
+        click.echo(CHECK.curl_command())
