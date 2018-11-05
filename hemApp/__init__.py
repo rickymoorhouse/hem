@@ -270,7 +270,11 @@ def initialise_metrics(metricConfig):
         )
     return metrics_driver.instance(metricConfig)
 
-def run_tests(config, metrics=None, storage=None):        
+def run_tests(config, metrics=None, storage=None):
+    # Disable InsecureRequestWarning as when we get these it is expected
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
     start = time.time()
     logging.info("Started tests at {}".format(start))
 
