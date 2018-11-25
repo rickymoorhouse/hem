@@ -161,7 +161,7 @@ class Check(object):
             http_call=getattr(requests,self.method) 
             start = time.time()
             result = http_call(
-                self.url.format(param), 
+                self.url.format(param if type(param) == str else param["host"]), 
                 headers=self.headers,
                 timeout=self.timeout, 
                 verify=self.verify,
@@ -199,24 +199,25 @@ class Check(object):
             success = 1
 
         if self.metrics:
+            metric_name = param if type(param) == str else param["metric"]
             self.metrics.stage(
-                "{}.{}.result".format(self.name, param.replace('.', '_')),
+                "{}.{}.result".format(self.name, metric_name.replace('.', '_')),
                 status
                 )
             self.metrics.stage(
-                "{}.{}.success".format(self.name, param.replace('.', '_')),
+                "{}.{}.success".format(self.name, metric_name.replace('.', '_')),
                 success
                 )
             self.metrics.stage(
-                "{}.{}.failure".format(self.name, param.replace('.', '_')),
+                "{}.{}.failure".format(self.name, metric_name.replace('.', '_')),
                 0 if success == 1 else 1
                 )
             self.metrics.stage(
-                "{}.{}.time".format(self.name, param.replace('.', '_')),
+                "{}.{}.time".format(self.name, metric_name.replace('.', '_')),
                 elapsed_time.total_seconds()
                 )
             self.metrics.stage(
-                "{}.{}.roundtrip".format(self.name, param.replace('.', '_')),
+                "{}.{}.roundtrip".format(self.name, metric_name.replace('.', '_')),
                 roundtrip_time
                 )
         results.append((status, elapsed_time))

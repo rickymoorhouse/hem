@@ -14,6 +14,17 @@ def test_config_load():
     assert 'settings' in conf
     assert 'discovery' in conf
 
+def test_dict_list():
+    with requests_mock.mock() as m:
+        m.get('https://1.1.1.1/', text="")
+        test = {'path':'/', 'secure':True, 'verify':True}
+        check = hemApp.Check('test', test)
+        results = check.test_list([{"host":"1.1.1.1","name":"ones"}])
+        (response, timing) = results[0]
+        assert results is not None
+        assert response == 200
+        assert type(timing) is datetime.timedelta
+
 def test_check_invoke():
     with requests_mock.mock() as m:
         m.get('https://1.1.1.1/', text="")
