@@ -185,6 +185,11 @@ class Check(object):
             self.report_failure(param, timeout.strerror)
             status = 522
             elapsed_time = timedelta(seconds=self.timeout)
+        except requests.exceptions.ReadTimeout as timeout:
+            self.logger.debug(timeout)
+            self.report_failure(param, timeout.strerror)
+            status = 522
+            elapsed_time = timedelta(seconds=self.timeout)
         except requests.exceptions.ConnectionError as connection:
             self.logger.debug(connection)
             self.report_failure(param, connection.strerror)
