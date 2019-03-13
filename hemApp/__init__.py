@@ -241,9 +241,10 @@ class Check(object):
         threads = []
         # Start a thread for each parameter
         for param in param_list:
-            t = threading.Thread(target=self.test, args=(param, results))
-            threads.append(t)
-            t.start()
+            if param != None:
+                t = threading.Thread(target=self.test, args=(param, results))
+                threads.append(t)
+                t.start()
         for i in range(len(threads)):
             threads[i].join()
         self.logger.info(results)
