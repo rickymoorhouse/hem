@@ -100,6 +100,8 @@ class Check(object):
         else:
             self.url = "http://{}" + test.get('path', '')
         self.method = test.get('method', "get")
+        if 'timeout' in test:
+            self.timeout = test['timeout']
         if 'expected' in test:
             self.expected = test['expected']
         if 'certificate' in test:
