@@ -243,6 +243,8 @@ class Check(object):
         threads = []
         # Start a thread for each parameter
         for param in param_list:
+            if '{' in param:
+                param = param.format(**os.environ)
             if param != None:
                 t = threading.Thread(target=self.test, args=(param, results))
                 threads.append(t)
