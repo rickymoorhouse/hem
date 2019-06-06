@@ -212,16 +212,8 @@ class Check(object):
                 status
                 )
             self.metrics.stage(
-                "{}.{}.success".format(self.name, metric_name.replace('.', '_')),
-                success
-                )
-            self.metrics.stage(
                 "{}.{}.success.count".format(self.name, metric_name.replace('.', '_')),
                 success
-                )
-            self.metrics.stage(
-                "{}.{}.failure".format(self.name, metric_name.replace('.', '_')),
-                0 if success == 1 else 1
                 )
             self.metrics.stage(
                 "{}.{}.failure.count".format(self.name, metric_name.replace('.', '_')),
