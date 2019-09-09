@@ -21,7 +21,9 @@ class HemStore:
         self.data[key] = value
     def get(self, key):
         return self.data.get(key, None)
-
+import pkg_resources
+for dist in pkg_resources.working_set:
+  print(dist)
 logging.captureWarnings(True)
 
 def setup_logging(
@@ -82,6 +84,7 @@ class Check(object):
     name = ""
     headers = {}
     expected = None
+    in_body = None
     timeout = 10
     metrics = None
     storage = None
@@ -89,7 +92,7 @@ class Check(object):
     token = None
     certificate = None
 
-    def __init__(self, name, test, metrics=None, storage=None):
+    def __init__(self, name, test, metrics=None, storage=None, hem_info={}):
         #path, secure=False, verify=True, metrics=None):
         self.logger = logging.getLogger(__name__)
         self.name = name
@@ -104,6 +107,8 @@ class Check(object):
             self.timeout = test['timeout']
         if 'expected' in test:
             self.expected = test['expected']
+        if 'in_body' in test:
+            self.in_body = test['in_body']
         if 'certificate' in test:
             self.logger.info("Setting certificate to %s", test['certificate'])
             self.certificate = test['certificate']
@@ -172,6 +177,7 @@ class Check(object):
             self.logger.debug("Response text: %s", result.text)
             elapsed_time = result.elapsed
             result.raise_for_status()
+            size = len(result.text)
             status = result.status_code
         except requests.exceptions.HTTPError as he:
             self.logger.debug(he)
@@ -198,10 +204,19 @@ class Check(object):
             status = 444
         roundtrip_time = time.time() - start
         success = 0
+        self.logger.debug(self)
         if self.expected:
             self.logger.debug("Testing status of {} against {}".format(status, self.expected))
             if status == self.expected:
                 success = 1
+        elif self.in_body:
+            self.logger.debug("Entering if in body")
+            self.logger.debug("Testing body for {} in {}".format(self.in_body, result.text))
+            if self.in_body in result.text:
+                success = 1
+            else:
+                success = 0
+                status = 600
         elif status == requests.codes.ok:
             success = 1
 
@@ -227,6 +242,10 @@ class Check(object):
                 "{}.{}.roundtrip".format(self.name, metric_name.replace('.', '_')),
                 roundtrip_time
                 )
+            self.metrics.stage(
+                "{}.{}.size".format(self.name, metric_name.replace('.', '_')),
+                size
+                )
         results.append((status, elapsed_time))
 
     def test_list(self, param_list):
@@ -236,7 +255,7 @@ class Check(object):
         # Start a thread for each parameter
         for param in param_list:
             if param and '{' in param:
-                param = param.format(**os.environ)
+                param = param.format({**dict(os.environ), **self.hem_info})
             if param != None:
                 t = threading.Thread(target=self.test, args=(param, results))
                 threads.append(t)
@@ -313,7 +332,8 @@ def run_tests(config, metrics=None, storage=None):
             test_name,
             test,
             metrics,
-            storage)
+            storage,
+            hem_info={})
 #            test.get('secure',False), 
 #            test.get('verify',True), 
         results = CHECK.test_list(hosts)

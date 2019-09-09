@@ -30,7 +30,6 @@ def main(**kwargs):
     logger = logging.getLogger(__name__)
     config = hemApp.load_config(kwargs['config'])
 
-
     metrics = hemApp.initialise_metrics(config['metrics'])
 
     if not 'settings' in config:
