@@ -53,3 +53,7 @@ The config.yaml is made up of sections:
 ```
     type: dns // Plugin to use
 ```
+
+## Running in Docker
+
+    docker run -v ~/git/hem/hem.yaml:/conf/hem.conf -it rickymoorhouse/hem:10.6
