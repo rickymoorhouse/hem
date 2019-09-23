@@ -44,7 +44,7 @@ def test_check_in_body():
         results = check.test_list(["1.1.1.1"])
         (response, timing) = results[0]
         assert results is not None
-        assert response == 200
+        assert response == 600
         assert type(timing) is datetime.timedelta
 def test_check_mtls_invoke():
     with requests_mock.mock() as m:
@@ -107,4 +107,4 @@ def test_check_headers():
             assert results == []
         except requests_mock.exceptions.NoMockAddress as m:
             exit(m)
-            assert "host test" is "host test"
+            assert "host test" == "host test"
