@@ -211,7 +211,7 @@ class Check(object):
             self.logger.debug("Testing status of {} against {}".format(status, self.expected))
             if status == self.expected:
                 success = 1
-        else status == requests.codes.ok:
+        elif status == requests.codes.ok:
             success = 1
 
         if success == 1 and self.in_body:
