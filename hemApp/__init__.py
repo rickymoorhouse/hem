@@ -92,7 +92,7 @@ class Check(object):
     token = None
     certificate = None
 
-    def __init__(self, name, test, metrics=None, storage=None, hem_info={}):
+    def __init__(self, name, test, metrics=None, storage=None):
         #path, secure=False, verify=True, metrics=None):
         self.logger = logging.getLogger(__name__)
         self.name = name
@@ -258,7 +258,7 @@ class Check(object):
         # Start a thread for each parameter
         for param in param_list:
             if param and '{' in param:
-                param = param.format({**dict(os.environ), **self.hem_info})
+                param = param.format(**os.environ)
             if param != None:
                 t = threading.Thread(target=self.test, args=(param, results))
                 threads.append(t)
@@ -335,8 +335,8 @@ def run_tests(config, metrics=None, storage=None):
             test_name,
             test,
             metrics,
-            storage,
-            hem_info={})
+            storage
+            )
 #            test.get('secure',False), 
 #            test.get('verify',True), 
         results = CHECK.test_list(hosts)
