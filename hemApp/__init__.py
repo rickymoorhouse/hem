@@ -211,7 +211,10 @@ class Check(object):
             self.logger.debug("Testing status of {} against {}".format(status, self.expected))
             if status == self.expected:
                 success = 1
-        elif self.in_body:
+        elif status == requests.codes.ok:
+            success = 1
+
+        if success == 1 and self.in_body:
             self.logger.debug("Entering if in body")
             self.logger.debug("Testing body for {} in {}".format(self.in_body, result.text))
             if self.in_body in result.text:
@@ -219,8 +222,6 @@ class Check(object):
             else:
                 success = 0
                 status = 600
-        elif status == requests.codes.ok:
-            success = 1
 
         if self.metrics:
             metric_name = param if type(param) == str else param["metric"]
