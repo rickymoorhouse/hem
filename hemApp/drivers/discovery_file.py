@@ -13,7 +13,6 @@ def hosts(**kwargs):
     try:
         with open(kwargs['name'], 'rt') as source_file:
             hosts = yaml.safe_load(source_file)
-            print(hosts)
             for host in hosts:
                 if 'key' in kwargs:
                     if 'enabled_key' in kwargs:
