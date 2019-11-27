@@ -1,0 +1,28 @@
+kind: Pod 
+apiVersion: v1 
+metadata:
+  name: hem-pod
+
+spec:
+  # Add the ConfigMap as a volume to the Pod
+  volumes:
+    # `name` here must match the name
+    # specified in the volume mount
+    - name: hem-configmap-volume
+      # Populate the volume with config map data
+      configMap:
+        # `name` here must match the name 
+        # specified in the ConfigMap's YAML 
+        name: hem-configmap
+
+  containers:
+    - name: hem
+      command: ['hem', '-c/config/hem.conf']
+      image: rickymoorhouse/hem:latest
+      # Mount the volume that contains the configuration data 
+      # into your container filesystem
+      volumeMounts:
+        # `name` here must match the name
+        # from the volumes section of this pod
+        - name: hem-configmap-volume
+          mountPath: /config
