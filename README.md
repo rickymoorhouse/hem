@@ -1,6 +1,6 @@
 # HEM - HTTP Endpoint Monitor
 
-[![Build Status](https://travis-ci.org/rickymoorhouse/hem.svg?branch=master)](https://travis-ci.org/rickymoorhouse/hem) [![PyPI version fury.io](https://badge.fury.io/py/hemApp.svg)](https://pypi.python.org/pypi/hemApp/) [![Coverage Status](https://coveralls.io/repos/github/rickymoorhouse/hem/badge.svg)](https://coveralls.io/github/rickymoorhouse/hem)
+[![Build Status](https://travis-ci.org/rickymoorhouse/hem.svg?branch=master)](https://travis-ci.org/rickymoorhouse/hem) [![PyPI version fury.io](https://badge.fury.io/py/hemApp.svg)](https://pypi.python.org/pypi/hemApp/) [![Coverage Status](https://coveralls.io/repos/github/rickymoorhouse/hem/badge.svg)](https://coveralls.io/github/rickymoorhouse/hem) [![Docker Build](https://img.shields.io/docker/cloud/build/rickymoorhouse/hem)](https://hub.docker.com/r/rickymoorhouse/hem)
 
 To install hem, use:
 
