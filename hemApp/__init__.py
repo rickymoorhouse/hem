@@ -265,7 +265,7 @@ class Check(object):
                 t.start()
         for i in range(len(threads)):
             threads[i].join()
-        self.logger.info(results)
+        self.logger.debug(results)
         return results
 
     def report_failure(self, param, message):
