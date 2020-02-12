@@ -21,9 +21,8 @@ class HemStore:
         self.data[key] = value
     def get(self, key):
         return self.data.get(key, None)
-import pkg_resources
-for dist in pkg_resources.working_set:
-  print(dist)
+
+
 logging.captureWarnings(True)
 
 def setup_logging(
@@ -38,7 +37,7 @@ def setup_logging(
         with open(path, 'rt') as config_file:
             config = yaml.safe_load(config_file.read())
         logging.config.dictConfig(config)
-        logging.getLogger().setLevel(level=default_level)
+        logging.getLogger(__name__).setLevel(level=default_level)
     else:
         logging.basicConfig(level=default_level)
 
@@ -56,6 +55,9 @@ def load_config(path = 'hem.yaml'):
                 return yaml.safe_load(config_file.read())
     click.echo("No config found in "+', '.join(path_list))
     exit(2)
+
+
+setup_logging()
 
 @six.add_metaclass(abc.ABCMeta)
 class Metrics(object):
