@@ -57,8 +57,6 @@ def load_config(path = 'hem.yaml'):
     exit(2)
 
 
-setup_logging()
-
 @six.add_metaclass(abc.ABCMeta)
 class Metrics(object):
     """Base class for storing of metrics data
