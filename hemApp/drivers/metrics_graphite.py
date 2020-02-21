@@ -27,7 +27,7 @@ class instance(hemApp.Metrics):
             sock.connect((self.server, self.port))
             self.logger.info("Storing {} records".format(len(self.cache)))
             self.logger.debug("\n".join(self.cache))
-            sock.sendall("\n".join(self.cache).encode())        
+            sock.sendall(("\n".join(self.cache)+"\n").encode())
             sock.close()
             # Clear out cache
             self.cache[:] = []
