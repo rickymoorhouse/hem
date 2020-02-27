@@ -24,22 +24,7 @@ class HemStore:
 
 
 logging.captureWarnings(True)
-
-def setup_logging(
-        default_path='logging.yaml',
-        default_level=logging.ERROR
-        ):
-    """Setup logging configuration
-
-    """
-    path = default_path
-    if os.path.exists(path):
-        with open(path, 'rt') as config_file:
-            config = yaml.safe_load(config_file.read())
-        logging.config.dictConfig(config)
-        logging.getLogger(__name__).setLevel(level=default_level)
-    else:
-        logging.basicConfig(level=default_level)
+logger = logging.getLogger(__name__)
 
 def load_config(path = 'hem.yaml'):
     """
@@ -287,12 +272,12 @@ def discover_hosts(src, metrics=None):
             try:
                 host_list = discovery.hosts(**src)
             except Exception as e:
-                logging.error("{} discovery of failed with exception".format(discovery_type))
-                logging.exception(e)
+                logger.error("{} discovery of failed with exception".format(discovery_type))
+                logger.exception(e)
                 host_list = []
             return host_list
     except ImportError as e:
-        logging.exception(e)
+        logger.exception(e)
         click.echo("Discovery method {} not found".format(discovery_type))
         return []
 
@@ -309,7 +294,7 @@ def run_tests(config, metrics=None, storage=None):
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
     start = time.time()
-    logging.info("Started tests at {}".format(start))
+    logger.info("Started tests at {}".format(start))
 
     if 'discovery' in config:
         DEFAULT_DISCOVERY = config['discovery']
@@ -329,8 +314,8 @@ def run_tests(config, metrics=None, storage=None):
             hosts = discover_hosts(discovery, metrics)
         else:
             hosts = []
-        logging.info("Testing {0} across {1} hosts".format(test_name, len(hosts)))
-        logging.debug(test)
+        logger.info("Testing {0} across {1} hosts".format(test_name, len(hosts)))
+        logger.debug(test)
         CHECK = Check(
             test_name,
             test,
@@ -340,7 +325,7 @@ def run_tests(config, metrics=None, storage=None):
 #            test.get('secure',False), 
 #            test.get('verify',True), 
         results = CHECK.test_list(hosts)
-        logging.debug(results)
+        logger.debug(results)
     end = time.time()
     metrics.store()
     return (end - start)
