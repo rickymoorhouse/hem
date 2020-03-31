@@ -11,8 +11,11 @@ import six
 import time
 import pike.discovery
 from pike.manager import PikeManager
+import pkg_resources
 import threading
 import jwt
+
+__version__ = pkg_resources.get_distribution("hemApp").version
 
 class HemStore:
     def __init__(self):
@@ -67,7 +70,7 @@ class Check(object):
     url = ""
     method = "get"
     name = ""
-    headers = {}
+    headers = {"User-Agent": "Hem {}"+__version__}
     expected = None
     in_body = None
     timeout = 10
@@ -98,7 +101,8 @@ class Check(object):
             self.logger.info("Setting certificate to %s", test['certificate'])
             self.certificate = test['certificate']
         if 'headers' in test:
-            self.headers = test['headers']
+            for header in test['headers']:
+              self.headers[header] = test['headers'][header]
         if 'auth' in test:
             self.auth = test['auth']
 
