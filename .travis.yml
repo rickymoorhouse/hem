@@ -8,7 +8,7 @@ install:
 script:
 - coverage run --source hemApp -m py.test
 - coverage report
-- coveralls
+- coveralls || true
 after_success:
 - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
 - export REPO=rickymoorhouse/hem
