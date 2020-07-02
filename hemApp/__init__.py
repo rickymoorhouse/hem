@@ -163,7 +163,8 @@ class Check(object):
                 headers=self.headers,
                 timeout=self.timeout, 
                 verify=self.verify,
-                cert=self.certificate
+                cert=self.certificate,
+                allow_redirects=False
                 )
             self.logger.debug("Response text: %s", result.text)
             elapsed_time = result.elapsed
