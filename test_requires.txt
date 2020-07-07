@@ -6,7 +6,7 @@ PyYAML
 pike
 setuptools_scm
 mock
-pytest>=3.6
+pytest>=4.6
 pytest-cov
 pytest-mock
 requests-mock
