@@ -39,7 +39,7 @@ def main(**kwargs):
     logger.info(config)
     storage = hemApp.HemStore()
     while True:
-        duration = hemApp.run_tests(config, metrics, storage)
+        duration = hemApp.run_tests_threaded(config, metrics, storage)
         logger.error("Duration: {}".format(duration))
         try:
             if int(frequency - duration) > 0:
