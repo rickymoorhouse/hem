@@ -10,6 +10,8 @@ import os
 @click.option('-v', '--verbose', 
                 help="Verbose mode, multiple -v options increase verbosity.", 
                 count=True)
+@click.option('-t', '--threads', 
+                count=True)
 @click.option('-c', '--config', required=False, 
                 help="Specifies an alternative config file",
                 type=click.Path())
@@ -39,7 +41,10 @@ def main(**kwargs):
     logger.info(config)
     storage = hemApp.HemStore()
     while True:
-        duration = hemApp.run_tests(config, metrics, storage)
+        if kwargs['threads'] > 0:
+            duration = hemApp.run_tests_threaded(config, metrics, storage)
+        else:
+            duration = hemApp.run_tests(config, metrics, storage)
         logger.error("Duration: {}".format(duration))
         try:
             if int(frequency - duration) > 0:

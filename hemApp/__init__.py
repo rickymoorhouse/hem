@@ -329,9 +329,13 @@ def run_tests(config, metrics=None, storage=None):
             )
 #            test.get('secure',False), 
 #            test.get('verify',True), 
+        start_test = time.time()
         results = CHECK.test_list(hosts)
         logger.debug(results)
+        elapsed_test = time.time() - start_test
+        metrics.stage('hem.elapsed.{}'.format(test_name), end - start)
     end = time.time()
+    metrics.stage('hem.elapsed.loop', end - start)
     metrics.store()
     return (end - start)
 
@@ -372,9 +376,12 @@ def run_tests_threaded(config, metrics=None, storage=None):
             )
 #            test.get('secure',False), 
 #            test.get('verify',True), 
+        start_test = time.time()
         results = CHECK.test_list(hosts)
         logger.debug(results)
+        elapsed_test = time.time() - start_test
+        metrics.stage('hem.elapsed.{}'.format(test_name), elapsed_test)
     end = time.time()
+    metrics.stage('hem.elapsed.loop', end - start)
     metrics.store()
     return (end - start)
-
