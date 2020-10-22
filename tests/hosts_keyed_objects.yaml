@@ -1,0 +1,16 @@
+{
+  "cluster_a": {
+    "hostname": "host1.example.com",
+    "type": "web"
+    "check": true
+  },
+  "cluster_b": {
+    "hostname": "host2.example.com",
+    "type": "web"
+    "check": true
+  },
+  "cluster_c": {
+    "hostname": "host0.example.com",
+    "type": "web"
+    "check": false
+  }}
