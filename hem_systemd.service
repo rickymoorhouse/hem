@@ -1,0 +1,18 @@
+# SystemD service file for hem
+# Author: Ricky Moorhouse
+
+[Unit]
+Description=Hem
+After=syslog.target network.target
+
+[Service]
+Environment="LC_ALL=C.UTF-8"
+Environment="LANG=C.UTF-8"
+
+ExecStart=/usr/local/bin/hem -t -c /etc/hem.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
