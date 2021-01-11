@@ -333,7 +333,7 @@ def run_tests(config, metrics=None, storage=None):
         results = CHECK.test_list(hosts)
         logger.debug(results)
         elapsed_test = time.time() - start_test
-        metrics.stage('hem.elapsed.{}'.format(test_name), end - start)
+        metrics.stage('hem.elapsed.{}'.format(test_name), elapsed_test)
     end = time.time()
     metrics.stage('hem.elapsed.loop', end - start)
     metrics.store()
