@@ -329,9 +329,59 @@ def run_tests(config, metrics=None, storage=None):
             )
 #            test.get('secure',False), 
 #            test.get('verify',True), 
+        start_test = time.time()
         results = CHECK.test_list(hosts)
         logger.debug(results)
+        elapsed_test = time.time() - start_test
+        metrics.stage('hem.elapsed.{}'.format(test_name), elapsed_test)
     end = time.time()
+    metrics.stage('hem.elapsed.loop', end - start)
     metrics.store()
     return (end - start)
 
+
+def run_tests_threaded(config, metrics=None, storage=None):
+    # Disable InsecureRequestWarning as when we get these it is expected
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+    start = time.time()
+    logger.info("Started tests at {}".format(start))
+
+    if 'discovery' in config:
+        DEFAULT_DISCOVERY = config['discovery']
+    else:
+        DEFAULT_DISCOVERY = {}
+    store = {}
+    for test_name in config['tests']:
+        test = config['tests'][test_name]
+
+        # Host list can be an array in the config or discovery
+        if 'hosts' in test:
+            hosts = test['hosts']
+        elif 'discovery' in test:
+            # Local discovery section inherits defaults but overrides defaults
+            discovery = DEFAULT_DISCOVERY.copy()
+            discovery.update(test['discovery']) # Python 3.5 move to context = {**defaults, **user}
+            hosts = discover_hosts(discovery, metrics)
+        else:
+            hosts = []
+        logger.info("Testing {0} across {1} hosts".format(test_name, len(hosts)))
+        logger.debug(test)
+        CHECK = Check(
+            test_name,
+            test,
+            metrics,
+            storage
+            )
+#            test.get('secure',False), 
+#            test.get('verify',True), 
+        start_test = time.time()
+        results = CHECK.test_list(hosts)
+        logger.debug(results)
+        elapsed_test = time.time() - start_test
+        metrics.stage('hem.elapsed.{}'.format(test_name), elapsed_test)
+    end = time.time()
+    metrics.stage('hem.elapsed.loop', end - start)
+    metrics.store()
+    return (end - start)
