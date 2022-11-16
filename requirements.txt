@@ -8,7 +8,7 @@ setuptools_scm
 pytest
 coverage
 requests-mock
-mock
 pyjwt
 pykafka
+prometheus_client
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
