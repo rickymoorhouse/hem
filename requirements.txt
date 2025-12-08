@@ -12,3 +12,4 @@ pyjwt
 pykafka
 prometheus_client
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
