@@ -79,6 +79,7 @@ class Check(object):
     auth = {}
     token = None
     certificate = None
+    ca = None
 
     def __init__(self, name, test, metrics=None, storage=None):
         #path, secure=False, verify=True, metrics=None):
@@ -100,6 +101,11 @@ class Check(object):
         if 'certificate' in test:
             self.logger.info("Setting certificate to %s", test['certificate'])
             self.certificate = test['certificate']
+        if 'ca' in test:
+            self.logger.info("Setting CA certificate to %s", test['ca'])
+            self.ca = test['ca']
+            # If CA is specified, use it for verification instead of True/False
+            self.verify = test['ca']
         if 'headers' in test:
             for header in test['headers']:
               self.headers[header] = test['headers'][header]

@@ -1,0 +1,17 @@
+settings:
+  frequency: 10
+discovery:
+  type: dns
+metrics:
+  type: graphite
+  server: nonexistent.graphite
+tests:
+  homepage:
+    path: /index.html
+    secure: true
+    ca: /path/to/ca-cert.pem
+    hosts: 
+       - rickymoorhouse.uk
+       - rickymoorhouse.co.uk
+
+# Made with Bob

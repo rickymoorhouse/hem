@@ -40,12 +40,13 @@ The config.yaml is made up of sections:
  - tests - the actual endpoints to test
 
 ```
-    test-name: 
+    test-name:
         path: Path to test
         secure: Is this using HTTPS?
-        hosts: List of hosts to use 
+        hosts: List of hosts to use
         certificate: Path to keypair to use for mTLS - must be un-encrypted
-        discovery: discovery block for this test - merged with top level block 
+        ca: Path to CA certificate file for verifying server certificates
+        discovery: discovery block for this test - merged with top level block
 ```
 
  - discovery - optional top level discovery config shared across tests

@@ -56,6 +56,19 @@ def test_check_mtls_invoke():
         assert results is not None
         assert response == 200
         assert type(timing) is datetime.timedelta
+
+def test_check_ca_invoke():
+    with requests_mock.mock() as m:
+        m.get('https://1.1.1.1/', text="")
+        test = {'path':'/', 'secure':True, 'verify':True, 'ca': '/path/to/ca-cert.pem'}
+        check = hemApp.Check('test', test)
+        results = check.test_list(["1.1.1.1"])
+        (response, timing) = results[0]
+        assert results is not None
+        assert response == 200
+        assert type(timing) is datetime.timedelta
+        assert check.verify == '/path/to/ca-cert.pem'
+        assert check.ca == '/path/to/ca-cert.pem'
 def test_check_jwt_invoke():
     hemstore = hemApp.HemStore()
     with requests_mock.mock() as m:
