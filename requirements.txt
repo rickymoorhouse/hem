@@ -1,14 +1,13 @@
-click
-dnspython
-pike
-requests
-PyYAML
-pike
-setuptools_scm
-pytest
-coverage
-requests-mock
-pyjwt
-pykafka
-prometheus_client
-setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
+click>=8.1.0
+dnspython>=2.6.0
+pike>=0.1.1
+requests>=2.32.0
+PyYAML>=6.0.0
+setuptools_scm>=8.0.0
+pytest>=8.0.0
+coverage>=7.0.0
+requests-mock>=1.12.0
+pyjwt>=2.9.0
+pykafka>=2.8.0
+prometheus_client>=0.20.0
+setuptools>=75.0.0
