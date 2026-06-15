@@ -1,4 +1,4 @@
-pytest
+pytest>=9.1.0
 click
 dnspython
 pike
@@ -7,7 +7,7 @@ PyYAML
 pike
 setuptools_scm
 mock
-pytest>=4.6
+pytest>=9.1.0>=4.6
 pytest-cov
 pytest-mock
 requests-mock
